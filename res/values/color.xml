@@ -4,5 +4,7 @@
 	<color name="LightYellow">#FFFFE0</color>
 	 
 <!-- 	 Custom App Colors -->
-	<color name="ActionBarBackground">#F44336</color>
+	<color name="ActionBarBackground">#9C27B0</color>
+	<color name="ActionBarBackgroundDark">#4A148C</color>
+	
 </resources>
