@@ -4,7 +4,11 @@
 	<color name="LightYellow">#FFFFE0</color>
 	 
 <!-- 	 Custom App Colors -->
-	<color name="ActionBarBackground">#9C27B0</color>
-	<color name="ActionBarBackgroundDark">#4A148C</color>
+	<color name="ActionBarBackground">#4CAF50</color>
+	<color name="ActionBarBackgroundDark">#1B5E20</color>
+	
+<!-- 	SARA COLOURS -->
+<!-- 	<color name="ActionBarBackground">#C8C8C8</color> -->
+<!-- 	<color name="ActionBarBackgroundDark">#B5B5B5</color> -->
 	
 </resources>

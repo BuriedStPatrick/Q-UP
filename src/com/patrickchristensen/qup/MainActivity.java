@@ -4,20 +4,53 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
+//import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-
+	
+	public static final String SERVERIP = "";
+	public static final int SERVERPORT = 8080;
+	
+	public static Context appContext;
+	
+//	private ActionBarDrawerToggle 	drawerListener;
+	private DrawerLayout			drawerLayout;
+	
+	private TextView serverStatus;
+	private LinearLayout mainLayout;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		appContext = getApplicationContext();
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		
+//		drawerListener = new ActionBarDrawerToggle(
+//				this, drawerLayout,
+//				R.string.open_drawer, R.string.close_drawer){
+//			
+//			@Override
+//			public void onDrawerOpened(View drawerView) {
+//				super.onDrawerOpened(drawerView);
+//				Toast.makeText(appContext, "Opened", Toast.LENGTH_SHORT).show();
+//			}
+//			
+//			@Override
+//			public void onDrawerClosed(View drawerView) {
+//				super.onDrawerClosed(drawerView);
+//				Toast.makeText(appContext, "Opened", Toast.LENGTH_SHORT).show();
+//			}
+//		};
+		
+//		drawerLayout.setDrawerListener(drawerListener);
+		
 	}
 
 	@Override
