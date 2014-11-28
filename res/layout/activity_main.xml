@@ -29,7 +29,7 @@
 		
 		<ListView
 		    android:background="@android:color/white"
-		    android:id="@+id/drawerList"
+		    android:id="@+id/drawer_list"
 		    android:layout_width="240dp"
 		    android:layout_height="match_parent"
 		    android:entries="@array/menu_categories"
@@ -38,6 +38,7 @@
 		</ListView>
 		
 	    <include layout="@layout/main_layout"/>
+	    
 	    
 	    
 	</android.support.v4.widget.DrawerLayout>
