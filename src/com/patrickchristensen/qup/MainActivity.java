@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +26,9 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 	private ListView				drawerList;
 	private DrawerLayout			drawerLayout;
 	private Toolbar					toolbar;
-	
-	private TextView serverStatus;
+	private TextView 				serverStatus;
+
+	private ArrayAdapter<String> 	pages;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 	}
 	
 	private void initDrawer(){
+		pages = new ArrayAdapter<String>(this, R.id.drawer_list);
 		drawerListener = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer){
 			@Override
 			public void onDrawerOpened(View drawerView) {
@@ -59,14 +62,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 			}
 		};
 		drawerLayout.setDrawerListener(drawerListener);
-		drawerList.setOnItemClickListener((android.widget.AdapterView.OnItemClickListener) this);
-		
-		drawerLayout.post(new Runnable() {
-			@Override
-			public void run() {
-				drawerListener.syncState();
-			}
-		});
 	}
 	
 	private void updateViews(){
