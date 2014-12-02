@@ -1,25 +1,28 @@
-package com.patrickchristensen.qup;
+package com.patrickchristensen.qup.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.internal.widget.AdapterViewCompat;
-import android.support.v7.internal.widget.AdapterViewCompat.OnItemClickListener;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity implements OnItemClickListener{
+import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.R;
+import com.patrickchristensen.qup.threads.ServerThread;
+
+public class ServerActivity extends ActionBarActivity{
 	
 	public static final String SERVERIP = "";
-	public static final int SERVERPORT = 8080;
+	public final static int SERVERPORT = 8080;
 	private String actionBar = "Now Playing";
 	
 	private ActionBarDrawerToggle 	drawerListener;
@@ -29,13 +32,16 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 	private TextView 				serverStatus;
 
 	private ArrayAdapter<String> 	pages;
+	private Thread					serverThread;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_server);
 		initView();
 		initDrawer();
+		serverThread = new Thread(new ServerThread(serverStatus));
+		serverThread.start();
 	}
 	
 	private void initView(){
@@ -53,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
 				invalidateOptionsMenu();
+				drawerList.bringToFront();
 			}
 			
 			@Override
@@ -60,8 +67,26 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 				super.onDrawerClosed(drawerView);
 				invalidateOptionsMenu();
 			}
+			
 		};
 		drawerLayout.setDrawerListener(drawerListener);
+		
+		drawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				switch(position){
+				case 0:
+					if(QupApplication.currentPage !=  0)
+						startActivity(new Intent(getApplicationContext(), ServerActivity.class));
+					break;
+				case 1:
+					if(QupApplication.currentPage != 1)
+						startActivity(new Intent(getApplicationContext(), ClientActivity.class));
+					break;
+				}
+			}
+		});
 	}
 	
 	private void updateViews(){
@@ -69,12 +94,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 			toolbar.setTitle(actionBar);
 			setSupportActionBar(toolbar);
 		}
-	}
-	
-	@Override
-	public void onItemClick(AdapterViewCompat<?> parent, View view, int position,
-			long id) {
-		Toast.makeText(this, position, Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
@@ -106,8 +125,15 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 			return true;
 		}
 		if(drawerListener.onOptionsItemSelected(item)){
+			invalidateOptionsMenu();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+    protected void onStop() {
+        super.onStop();
+        serverThread.interrupt();
+    }
 }

@@ -11,12 +11,13 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="action_example">Example action</string>
+    
+<!--     HINTS -->
+    <string name="hint_server_connect">Connect</string>
 
     <string-array name="menu_categories">
-        <item>Queue</item>
-        <item>Browse</item>
-        <item>Profile</item>
-        <item>Settings</item>
+        <item>Server</item>
+        <item>Client</item>
     </string-array>
     
     <string name="open_drawer">Open Navigation Drawer</string>
