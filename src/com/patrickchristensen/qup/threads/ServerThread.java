@@ -10,7 +10,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import com.patrickchristensen.qup.activities.ServerActivity;
+import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.ServerActivity;
+import com.patrickchristensen.qup.util.Utils;
 
 import android.os.Handler;
 import android.util.Log;
@@ -19,7 +21,7 @@ import android.widget.TextView;
 public class ServerThread implements Runnable{
 	
 	
-	public static final String SERVERIP = "10.0.2.15";
+	public static String serverIp = "";
 	
 	private Handler			handler;
 	private ServerSocket	serverSocket;
@@ -28,25 +30,28 @@ public class ServerThread implements Runnable{
 	public ServerThread(TextView serverStatus){
 		handler = new Handler();
 		this.serverStatus = serverStatus;
+		serverIp = Utils.getIPAddress(true);
 	}
 
 	@Override
 	public void run() {
 		try {
-            if (SERVERIP != null) {
+            if (serverIp != null) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        serverStatus.setText("Listening on IP: " + SERVERIP);
+                        serverStatus.setText("Listening on IP: " + serverIp);
                     }
                 });
-                serverSocket = new ServerSocket(ServerActivity.SERVERPORT);
+                serverSocket = new ServerSocket(QupApplication.serverPort);
+                Log.d("customtag", "created serversocket with port: " + QupApplication.serverPort);
                 while (true) {
                     // LISTEN FOR INCOMING CLIENTS
                     Socket client = serverSocket.accept();
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+                        	Log.d("customtag", "S: Connected");
                             serverStatus.setText("Connected.");
                         }
                     });
@@ -56,11 +61,13 @@ public class ServerThread implements Runnable{
                         String line = null;
                         while ((line = in.readLine()) != null) {
                             Log.d("ServerActivity", line);
+                            serverStatus.setText(line);
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     // DO WHATEVER YOU WANT TO THE FRONT END
                                     // THIS IS WHERE YOU CAN BE CREATIVE
+                                	
                                 }
                             });
                         }

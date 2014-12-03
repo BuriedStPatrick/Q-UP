@@ -5,15 +5,19 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-
-import com.patrickchristensen.qup.activities.ClientActivity;
-import com.patrickchristensen.qup.activities.ServerActivity;
+import java.util.Queue;
 
 import android.util.Log;
+import android.widget.Toast;
+
+import com.patrickchristensen.qup.ClientActivity;
+import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.interfaces.CommandInterface;
 
 public class ClientThread implements Runnable{
 	
 	private String serverIpAddress;
+	private Queue<CommandInterface> commands;
 	
 	public ClientThread(String serverIpAddress) {
 		this.serverIpAddress = serverIpAddress;
@@ -24,7 +28,7 @@ public class ClientThread implements Runnable{
 		try {
             InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
             Log.d("ClientActivity", "C: Connecting...");
-            Socket socket = new Socket(serverAddr, ServerActivity.SERVERPORT);
+            Socket socket = new Socket(serverAddr, QupApplication.serverPort);
             ClientActivity.connected = true;
             while (ClientActivity.connected) {
                 try {
@@ -32,7 +36,7 @@ public class ClientThread implements Runnable{
                     PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
                                 .getOutputStream())), true);
                         // WHERE YOU ISSUE THE COMMANDS
-                        out.println("Hey Server!");
+                        out.println("dostuff");
                         Log.d("ClientActivity", "C: Sent.");
                 } catch (Exception e) {
                     Log.e("ClientActivity", "S: Error", e);

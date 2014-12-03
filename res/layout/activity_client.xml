@@ -11,7 +11,7 @@
         android:id="@+id/server_ip"
         android:layout_width="match_parent"
         android:hint="@string/hint_server_connect"
-        android:inputType="number"
+        android:inputType="text"
         android:layout_height="wrap_content"/>
     
     <Button
