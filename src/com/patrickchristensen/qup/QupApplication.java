@@ -9,5 +9,8 @@ public class QupApplication extends Application{
 	public static int serverPort = 8080;
 	public static final boolean DEVELOPER_MODE = true;
 	public static Context appContext;
+	
+	//SET FALSE IN PROD
+	public static final boolean DEBUG = true;
 
 }

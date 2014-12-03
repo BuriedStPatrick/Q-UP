@@ -1,24 +1,23 @@
 package com.patrickchristensen.qup;
 
-import com.patrickchristensen.qup.R;
-import com.patrickchristensen.qup.R.id;
-import com.patrickchristensen.qup.R.layout;
-import com.patrickchristensen.qup.threads.ClientThread;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ClientActivity extends Activity{
+import com.patrickchristensen.qup.commands.Command;
+import com.patrickchristensen.qup.interfaces.CommandFactory;
+import com.patrickchristensen.qup.threads.ClientThread;
+
+public class ClientActivity extends Activity implements CommandFactory{
 	
 	private EditText 		serverIp;
 	private String 			serverIpAddress = "";
+	private String			userIpAddress = "";
 	private Handler			handler;
 	private Button			connectBtn;
 	
@@ -53,6 +52,10 @@ public class ClientActivity extends Activity{
 				}
 			}
 		});
+	}
+
+	@Override
+	public synchronized void executeCommand(Command command) {
 	}
 
 }

@@ -17,11 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.patrickchristensen.qup.R;
+import com.patrickchristensen.qup.commands.Command;
+import com.patrickchristensen.qup.interfaces.CommandFactory;
 import com.patrickchristensen.qup.threads.ServerThread;
 
-public class ServerActivity extends ActionBarActivity{
+public class ServerActivity extends ActionBarActivity implements CommandFactory{
 	
-	public static String SERVERIP = "";
 	private String actionBar = "Now Playing";
 	
 	private ActionBarDrawerToggle 	drawerListener;
@@ -36,9 +37,9 @@ public class ServerActivity extends ActionBarActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
+		QupApplication.appContext = getApplicationContext();
 		setContentView(R.layout.activity_server);
+		
 		initView();
 		initDrawer();
 		serverThread = new Thread(new ServerThread(serverStatus));
@@ -137,4 +138,8 @@ public class ServerActivity extends ActionBarActivity{
         super.onStop();
         serverThread.interrupt();
     }
+
+	@Override
+	public synchronized void executeCommand(Command command) {
+	}
 }
