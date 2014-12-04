@@ -3,7 +3,6 @@ package com.patrickchristensen.qup;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,9 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.patrickchristensen.qup.R;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.interfaces.CommandFactory;
+import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.threads.ServerThread;
 
 public class ServerActivity extends ActionBarActivity implements CommandFactory{
@@ -72,23 +71,7 @@ public class ServerActivity extends ActionBarActivity implements CommandFactory{
 			
 		};
 		drawerLayout.setDrawerListener(drawerListener);
-		
-		drawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				switch(position){
-				case 0:
-					if(QupApplication.currentPage !=  0)
-						startActivity(new Intent(getApplicationContext(), ServerActivity.class));
-					break;
-				case 1:
-					if(QupApplication.currentPage != 1)
-						startActivity(new Intent(getApplicationContext(), ClientActivity.class));
-					break;
-				}
-			}
-		});
+		drawerList.setOnItemClickListener(new DrawerItemListener(this));
 	}
 	
 	private void updateViews(){

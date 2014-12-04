@@ -10,6 +10,7 @@
     <string name="title_section3">Section 3</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
+    <string name="no_connection">No connection</string>
     <string name="action_example">Example action</string>
     
 <!--     HINTS -->

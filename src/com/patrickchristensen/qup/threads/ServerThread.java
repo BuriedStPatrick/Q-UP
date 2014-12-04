@@ -8,28 +8,32 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Enumeration;
-
-import com.patrickchristensen.qup.QupApplication;
-import com.patrickchristensen.qup.ServerActivity;
-import com.patrickchristensen.qup.util.Utils;
 
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.util.Utils;
 
 public class ServerThread implements Runnable{
 	
 	
 	public static String serverIp = "";
+	private String command = "";
 	
-	private Handler			handler;
-	private ServerSocket	serverSocket;
-	private TextView		serverStatus;
+	private Handler				handler;
+	private ServerSocket		serverSocket;
+	private TextView			serverStatus;
+	private ArrayList<Socket> 	clients;
 	
 	public ServerThread(TextView serverStatus){
 		handler = new Handler();
 		this.serverStatus = serverStatus;
+		clients = new ArrayList<Socket>();
 		serverIp = Utils.getIPAddress(true);
 	}
 
@@ -47,20 +51,18 @@ public class ServerThread implements Runnable{
                 Log.d("customtag", "created serversocket with port: " + QupApplication.serverPort);
                 while (true) {
                     // LISTEN FOR INCOMING CLIENTS
-                    Socket client = serverSocket.accept();
+                    clients.add(serverSocket.accept());
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                        	Log.d("customtag", "S: Connected");
-                            serverStatus.setText("Connected.");
+                        	Toast.makeText(QupApplication.appContext, clients.get(clients.size()-1).getInetAddress() + " connected.", Toast.LENGTH_LONG).show();
                         }
                     });
 
                     try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        BufferedReader in = new BufferedReader(new InputStreamReader(clients.get(clients.size()-1).getInputStream()));
                         String line = null;
                         while ((line = in.readLine()) != null) {
-                            Log.d("ServerActivity", line);
                             serverStatus.setText(line);
                             handler.post(new Runnable() {
                                 @Override

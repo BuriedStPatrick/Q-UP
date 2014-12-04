@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:orientation="vertical"
 	android:layout_height="match_parent"
+	android:orientation="vertical"
 	tools:context=".ServerActivity">
 
     <include layout="@layout/toolbar" />
@@ -24,20 +24,19 @@
 		    android:layout_margin="0dp"
 		    android:layout_width="400dp"
 		    android:layout_height="800dp"
-		    android:background="@android:color/white">
-		</FrameLayout>
+		    android:background="@android:color/white"
+		    />
 		
 		<ListView
 		    android:background="@android:color/white"
 		    android:id="@+id/drawer_list"
-		    android:layout_width="240dp"
+		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		    android:entries="@array/menu_categories"
 		    android:layout_gravity="left"
-		    >
-		</ListView>
+		    />
 		
-	    <include layout="@layout/main_layout"/>
+	    <include layout="@layout/server_layout"/>
 	    
 	    
 	    

@@ -7,26 +7,36 @@
     android:orientation="vertical"
     tools:context=".ClientActivity">
     
-    <EditText
-        android:id="@+id/server_ip"
-        android:layout_width="match_parent"
-        android:hint="@string/hint_server_connect"
-        android:inputType="text"
-        android:layout_height="wrap_content"
-        />
+    <include layout="@layout/toolbar" />
     
-    <Button
-        android:id="@+id/connect_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hint_server_connect"
-        />
+    <android.support.v4.widget.DrawerLayout
+	    android:id="@+id/drawer_layout"
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@android:color/white"
+	    tools:context="com.patrickchristensen.qup.ServerActivity" >
+	    
+        <FrameLayout
+		    xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:padding="0dp"
+		    android:layout_margin="0dp"
+		    android:layout_width="400dp"
+		    android:layout_height="800dp"
+		    android:background="@android:color/white"/>
+        
+        <ListView
+		    android:background="@android:color/white"
+		    android:id="@+id/drawer_list"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:entries="@array/menu_categories"
+		    android:layout_gravity="left"/>
+        
+        <include layout="@layout/client_layout"/>
     
-    <ListView
-        android:id="@+id/queue_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+    </android.support.v4.widget.DrawerLayout>
     
 
 </LinearLayout>
