@@ -12,5 +12,10 @@ public class QupApplication extends Application{
 	
 	//SET FALSE IN PROD
 	public static final boolean DEBUG = true;
+	
+	//COMMANDS
+	public static final int CONNECT = 0;
+	public static final int VOTE_SONG = 1;
+	public static final int DISCONNECT = 2;
 
 }

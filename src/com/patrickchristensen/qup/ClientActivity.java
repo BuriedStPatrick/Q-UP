@@ -15,12 +15,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.patrickchristensen.qup.commands.Command;
-import com.patrickchristensen.qup.interfaces.CommandFactory;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.threads.ClientThread;
 
-public class ClientActivity extends Activity implements CommandFactory{
+public class ClientActivity extends Activity{
 	
 	private ActionBarDrawerToggle 	drawerListener;
 	private ListView				drawerList;
@@ -91,10 +89,6 @@ public class ClientActivity extends Activity implements CommandFactory{
 		};
 		drawerLayout.setDrawerListener(drawerListener);
 		drawerList.setOnItemClickListener(new DrawerItemListener(this));
-	}
-
-	@Override
-	public synchronized void executeCommand(Command command) {
 	}
 
 }

@@ -1,18 +1,28 @@
 package com.patrickchristensen.qup.commands;
 
-import com.patrickchristensen.qup.interfaces.CommandFactory;
-import com.patrickchristensen.qup.interfaces.CommandInterface;
 
-public class Command implements CommandInterface{
+public class Command{
 	
 	private long 	userId;
+	private int		command;
+	private String	data;
 	
-	public Command(long userId){
+	public Command(long userId, int command, String data){
 		this.userId = userId;
+		this.command = command;
+		this.data = data;
 	}
 	
-	public synchronized void executeCommand(CommandFactory factory){
-		
+	public int getCommand() {
+		return command;
+	}
+	
+	public long getUserId() {
+		return userId;
+	}
+	
+	public String getData() {
+		return data;
 	}
 
 }

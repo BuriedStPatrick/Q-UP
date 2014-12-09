@@ -5,19 +5,15 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Queue;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.patrickchristensen.qup.ClientActivity;
 import com.patrickchristensen.qup.QupApplication;
-import com.patrickchristensen.qup.interfaces.CommandInterface;
 
 public class ClientThread implements Runnable{
 	
 	private String serverIpAddress;
-	private Queue<CommandInterface> commands;
 	
 	public ClientThread(String serverIpAddress) {
 		this.serverIpAddress = serverIpAddress;

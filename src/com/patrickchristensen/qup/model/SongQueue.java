@@ -30,5 +30,9 @@ public class SongQueue {
 		}
 		return _songs;
 	}
+	
+	public void registerVote(Song song){
+		
+	}
 
 }

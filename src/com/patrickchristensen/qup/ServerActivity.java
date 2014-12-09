@@ -1,6 +1,5 @@
 package com.patrickchristensen.qup;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -10,17 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.patrickchristensen.qup.commands.Command;
-import com.patrickchristensen.qup.interfaces.CommandFactory;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.threads.ServerThread;
 
-public class ServerActivity extends ActionBarActivity implements CommandFactory{
+public class ServerActivity extends ActionBarActivity{
 	
 	private String actionBar = "Now Playing";
 	
@@ -121,8 +117,4 @@ public class ServerActivity extends ActionBarActivity implements CommandFactory{
         super.onStop();
         serverThread.interrupt();
     }
-
-	@Override
-	public synchronized void executeCommand(Command command) {
-	}
 }
