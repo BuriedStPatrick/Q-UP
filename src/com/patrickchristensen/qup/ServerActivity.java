@@ -2,6 +2,8 @@ package com.patrickchristensen.qup;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,7 +14,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.threads.ServerThread;
 
@@ -37,7 +42,7 @@ public class ServerActivity extends ActionBarActivity{
 		
 		initView();
 		initDrawer();
-		serverThread = new Thread(new ServerThread(serverStatus));
+		serverThread = new Thread(new ServerThread(getServerHandler()));
 		serverThread.start();
 	}
 	
@@ -117,4 +122,35 @@ public class ServerActivity extends ActionBarActivity{
         super.onStop();
         serverThread.interrupt();
     }
+	
+	private Handler getServerHandler(){
+		Handler handler = new Handler(){
+			
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				Gson json = new Gson();
+				Command command =
+						json.fromJson(msg.getData().getString("data"), Command.class);
+				
+				switch(command.getCommand()){
+				case QupApplication.CONNECT:
+					Toast.makeText(getApplicationContext(), "Connect", Toast.LENGTH_LONG).show();
+					break;
+				case QupApplication.DISCONNECT:
+					Toast.makeText(getApplicationContext(), "Disconnect", Toast.LENGTH_LONG).show();
+					break;
+				case QupApplication.VOTE_SONG:
+					Toast.makeText(getApplicationContext(), "Vote song: " + command.getData(), Toast.LENGTH_LONG).show();
+					break;
+				default:
+					Toast.makeText(getApplicationContext(), "Command invalid", Toast.LENGTH_LONG).show();
+					break;
+				}
+			}
+			
+		};
+		
+		return handler;
+	}
 }

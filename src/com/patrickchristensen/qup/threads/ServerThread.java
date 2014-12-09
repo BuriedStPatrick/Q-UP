@@ -11,94 +11,62 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.ServerController;
+import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.util.Utils;
 
 public class ServerThread implements Runnable{
 	
 	
 	public static String serverIp = "";
-	private String command = "";
 	
 	private Handler				handler;
 	private ServerSocket		serverSocket;
-	private TextView			serverStatus;
 	private ArrayList<Socket> 	clients;
+	private ServerController	serverController;
 	
-	public ServerThread(TextView serverStatus){
-		handler = new Handler();
-		this.serverStatus = serverStatus;
+	public ServerThread(Handler handler){
+		this.handler = handler;
 		clients = new ArrayList<Socket>();
 		serverIp = Utils.getIPAddress(true);
+		serverController = ServerController.getInstance();
 	}
 
 	@Override
 	public void run() {
 		try {
             if (serverIp != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        serverStatus.setText("Listening on IP: " + serverIp);
-                    }
-                });
                 serverSocket = new ServerSocket(QupApplication.serverPort);
                 Log.d("customtag", "created serversocket with port: " + QupApplication.serverPort);
                 while (true) {
                     // LISTEN FOR INCOMING CLIENTS
-                    clients.add(serverSocket.accept());
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                        	Toast.makeText(QupApplication.appContext, clients.get(clients.size()-1).getInetAddress() + " connected.", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
+                	Socket client = serverSocket.accept(); // Blocking call
+                    clients.add(client);
+                	
                     try {
                         BufferedReader in = new BufferedReader(new InputStreamReader(clients.get(clients.size()-1).getInputStream()));
                         String line = null;
                         while ((line = in.readLine()) != null) {
-                            serverStatus.setText(line);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // DO WHATEVER YOU WANT TO THE FRONT END
-                                    // THIS IS WHERE YOU CAN BE CREATIVE
-                                	
-                                }
-                            });
+                        	Message msg = Message.obtain();
+                        	Bundle bundle = new Bundle();
+                        	bundle.putString("data", line);
+                        	msg.setData(bundle);
+                        	handler.sendMessage(msg);
                         }
                         break;
                     } catch (Exception e) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                serverStatus.setText("Oops. Connection interrupted. Please reconnect your phones.");
-                            }
-                        });
                         e.printStackTrace();
                     }
                 }
-            } else {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        serverStatus.setText("Couldn't detect internet connection.");
-                    }
-                });
             }
         } catch (Exception e) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    serverStatus.setText("Error");
-                }
-            });
             e.printStackTrace();
         }
 	}

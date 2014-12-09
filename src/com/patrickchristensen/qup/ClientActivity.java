@@ -3,6 +3,7 @@ package com.patrickchristensen.qup;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.threads.ClientThread;
 
@@ -30,9 +33,8 @@ public class ClientActivity extends Activity{
 	
 	private EditText 		serverIp;
 	private String 			serverIpAddress = "";
-	private String			userIpAddress = "";
-	private Handler			handler;
 	private Button			connectBtn;
+	private Thread			clientThread;
 	
 	public static boolean	connected = false;
 	
@@ -61,9 +63,9 @@ public class ClientActivity extends Activity{
 				if(!connected){
 					serverIpAddress = serverIp.getText().toString();
 					if(!serverIpAddress.isEmpty()){
-						Thread clientThread = new Thread(new ClientThread(serverIpAddress));
-						clientThread.start();
 						Toast.makeText(getApplicationContext(), "Started thread with ip: " + serverIpAddress + ":" + QupApplication.serverPort, Toast.LENGTH_SHORT).show();
+						clientThread = new Thread(new ClientThread(serverIpAddress, getClientHandler()));
+						clientThread.start();
 					}
 				}
 			}
@@ -89,6 +91,24 @@ public class ClientActivity extends Activity{
 		};
 		drawerLayout.setDrawerListener(drawerListener);
 		drawerList.setOnItemClickListener(new DrawerItemListener(this));
+	}
+	
+	private Handler getClientHandler(){
+		return new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				Gson json = new Gson();
+				Command command =
+						json.fromJson(msg.getData().getString("data"), Command.class);
+				
+				switch(command.getCommand()){
+				case QupApplication.FETCH_SONGS:
+					Toast.makeText(getApplicationContext(), "Fetching songs", Toast.LENGTH_LONG).show();
+					break;
+				}
+			}
+		};
 	}
 
 }

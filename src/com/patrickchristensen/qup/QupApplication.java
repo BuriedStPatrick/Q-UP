@@ -17,5 +17,6 @@ public class QupApplication extends Application{
 	public static final int CONNECT = 0;
 	public static final int VOTE_SONG = 1;
 	public static final int DISCONNECT = 2;
+	public static final int FETCH_SONGS = 3;
 
 }
