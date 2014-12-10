@@ -1,12 +1,16 @@
 package com.patrickchristensen.qup.model;
 
+import java.util.ArrayList;
+import java.util.Observable;
+
 import android.util.SparseArray;
 
 import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.commands.Command;
 
-public class SongQueue {
+public class SongQueue extends Observable{
 	
-	private SparseArray<Song> songs;
+	private ArrayList<Song> songs;
 	
 	public SongQueue() {
 		songs = getSongsFromDisk();
@@ -17,22 +21,30 @@ public class SongQueue {
 	 * Loads dummy data if QupApplication.DEBUG is true
 	 * @return A list of songs from the disk
 	 */
-	private SparseArray<Song> getSongsFromDisk(){
-		SparseArray<Song> _songs = new SparseArray<Song>();
+	private ArrayList<Song> getSongsFromDisk(){
+		ArrayList<Song> _songs = new ArrayList<Song>();
 		
 		if(QupApplication.DEBUG){
 			//load dummy data
-			_songs.put(0, new Song(0, "A Tribute to the Fallen", "Killswitch Engage", "Disarm the Descent", null));
-			_songs.put(1, new Song(1, "Addicted to Pain", "Alter Bridge", "Fortress", null));
-			_songs.put(2, new Song(2, "Over the Mountain", "Ozzy Osbourne", "Diary of a Madman", null));
+			_songs.add(new Song(0, "A Tribute to the Fallen", "Killswitch Engage", "Disarm the Descent", null, 57));
+			_songs.add(new Song(1, "Addicted to Pain", "Alter Bridge", "Fortress", null, 31));
+			_songs.add(new Song(2, "Over the Mountain", "Ozzy Osbourne", "Diary of a Madman", null, 42));
 		}else{
 			//TODO: load data from disk
+			//TODO: load data from sqlite db
 		}
 		return _songs;
 	}
 	
+	public ArrayList<Song> getSongs(){
+		return songs;
+	}
+	
 	public void registerVote(long songId){
-		
+		notifyObservers(new Command(Command.UPDATE_SONG_QUEUE));
+		for(Song song : songs){
+			
+		}
 	}
 
 }

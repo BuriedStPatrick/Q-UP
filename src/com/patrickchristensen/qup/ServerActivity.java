@@ -133,14 +133,14 @@ public class ServerActivity extends ActionBarActivity{
 				Command command =
 						json.fromJson(msg.getData().getString("data"), Command.class);
 				
-				switch(command.getCommand()){
-				case QupApplication.CONNECT:
+				switch(command.getAction()){
+				case Command.CONNECT:
 					Toast.makeText(getApplicationContext(), "Connect", Toast.LENGTH_LONG).show();
 					break;
-				case QupApplication.DISCONNECT:
+				case Command.DISCONNECT:
 					Toast.makeText(getApplicationContext(), "Disconnect", Toast.LENGTH_LONG).show();
 					break;
-				case QupApplication.VOTE_SONG:
+				case Command.VOTE_SONG:
 					Toast.makeText(getApplicationContext(), "Vote song: " + command.getData(), Toast.LENGTH_LONG).show();
 					break;
 				default:

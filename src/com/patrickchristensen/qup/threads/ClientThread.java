@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -18,10 +20,12 @@ public class ClientThread implements Runnable{
 	
 	private String serverIpAddress;
 	private Handler handler;
+	private Command command;
 	
-	public ClientThread(String serverIpAddress, Handler handler) {
+	public ClientThread(String serverIpAddress, Handler handler, Command command) {
 		this.serverIpAddress = serverIpAddress;
 		this.handler = handler;
+		this.command = command;
 	}
 
 	@Override
@@ -33,10 +37,10 @@ public class ClientThread implements Runnable{
                 try {
                     PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
                                 .getOutputStream())), true);
-                        // WHERE YOU ISSUE THE COMMANDS
-                    	Command command = new Command(QupApplication.CONNECT, "");
-                    	Gson json = new Gson();
-                    	out.println(json.toJson(command));
+                    // WHERE YOU ISSUE THE COMMANDS
+                	Gson json = new Gson();
+                	out.println(json.toJson(command));
+                	
                 } catch (Exception e) {
                     Log.e("ClientActivity", "S: Error", e);
                 }

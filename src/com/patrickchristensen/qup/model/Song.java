@@ -1,14 +1,17 @@
 package com.patrickchristensen.qup.model;
 
+import java.util.Observable;
+
 import android.graphics.Bitmap;
 
-public class Song {
+public class Song extends Observable{
 	
 	private long songId;
 	private String title;
 	private String artist;
 	private String album;
 	private Bitmap image;
+	private int votes;
 	
 	public Song(long songId, String title, String artist, String album, Bitmap image) {
 		this.songId = songId;
@@ -16,6 +19,11 @@ public class Song {
 		this.artist = artist;
 		this.album = album;
 		this.image = image;
+	}
+	
+	public Song(long songId, String title, String artist, String album, Bitmap image, int votes) {
+		this(songId, title, artist, album, image);
+		this.votes = votes;
 	}
 	
 	public long getSongId() {
@@ -37,5 +45,19 @@ public class Song {
 	public Bitmap getImage() {
 		return image;
 	}
-
+	
+	public int getVotes(){
+		return votes;
+	}
+	
+	public void addVote(){
+		votes++;
+	}
+	
+	@Override
+	public String toString() {
+		//TODO: Either fix ArrayAdapter to not use toString to fetch data or set this to be the same as in design requirements
+		return title + ": " + artist;
+	}
+	
 }
