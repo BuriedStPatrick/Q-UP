@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.patrickchristensen.qup.adapters.SongAdapter;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.model.Song;
@@ -39,13 +40,13 @@ public class ClientActivity extends Activity implements Observer{
 	private TextView 				serverStatus;
 
 	private ArrayAdapter<String> 	pages;
-	private ArrayAdapter<Song>	songs;
+	private SongAdapter				songAdapter;
 	
-	private EditText 		serverIp;
-	private String 			serverIpAddress = "";
-	private Button			connectBtn;
+	private EditText 				serverIp;
+	private String 					serverIpAddress = "";
+	private Button					connectBtn;
 	
-	public static boolean	connected = false;
+	public static boolean			connected = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,7 @@ public class ClientActivity extends Activity implements Observer{
 		songQueue = new SongQueue();
 		
 		pages = new ArrayAdapter<String>(this, R.id.drawer_list);
-		songs = new ArrayAdapter<Song>(this, R.id.queue_list, songQueue.getSongs());
-		//TODO: Need a class to extends ArrayAdapter, so that we can use Song-objects instead of Strings
+		songAdapter = new SongAdapter(this, songQueue);
 		initViews();
 		initDrawer();
 	}
@@ -84,7 +84,7 @@ public class ClientActivity extends Activity implements Observer{
 				}
 			}
 		});
-		queueList.setAdapter(songs);
+		queueList.setAdapter(songAdapter);
 		queueList.setOnItemClickListener(listQueueListener);
 	}
 	
