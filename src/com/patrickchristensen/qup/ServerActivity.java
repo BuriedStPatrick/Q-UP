@@ -1,5 +1,8 @@
 package com.patrickchristensen.qup;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,11 +22,15 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
-import com.patrickchristensen.qup.threads.ServerThread;
+import com.patrickchristensen.qup.model.SongQueue;
+import com.patrickchristensen.qup.threads.ReceiverThread;
+import com.patrickchristensen.qup.threads.SenderThread;
+import com.patrickchristensen.qup.util.Utils;
 
-public class ServerActivity extends ActionBarActivity{
+public class ServerActivity extends ActionBarActivity implements Observer{
 	
-	private String actionBar = "Now Playing";
+	private final String actionBar = "Now Playing";
+	private SongQueue songQueue;
 	
 	private ActionBarDrawerToggle 	drawerListener;
 	private ListView				drawerList;
@@ -32,7 +39,8 @@ public class ServerActivity extends ActionBarActivity{
 	private TextView 				serverStatus;
 
 	private ArrayAdapter<String> 	pages;
-	private Thread					serverThread;
+	
+	private Thread 					receiverThread;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +50,11 @@ public class ServerActivity extends ActionBarActivity{
 		
 		initView();
 		initDrawer();
-		serverThread = new Thread(new ServerThread(getServerHandler()));
-		serverThread.start();
+		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
+		receiverThread.start();	//starts listening for connections in the background
+		QupApplication.currentPage = 2;
+		serverStatus.setText("Listening on: " + Utils.getIPAddress(true));
+		songQueue = new SongQueue();
 	}
 	
 	private void initView(){
@@ -57,11 +68,12 @@ public class ServerActivity extends ActionBarActivity{
 	private void initDrawer(){
 		pages = new ArrayAdapter<String>(this, R.id.drawer_list);
 		drawerListener = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer){
+			
 			@Override
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
 				invalidateOptionsMenu();
-				drawerList.bringToFront();
+				Toast.makeText(getApplicationContext(), "derp", Toast.LENGTH_SHORT).show();
 			}
 			
 			@Override
@@ -69,7 +81,6 @@ public class ServerActivity extends ActionBarActivity{
 				super.onDrawerClosed(drawerView);
 				invalidateOptionsMenu();
 			}
-			
 		};
 		drawerLayout.setDrawerListener(drawerListener);
 		drawerList.setOnItemClickListener(new DrawerItemListener(this));
@@ -120,11 +131,11 @@ public class ServerActivity extends ActionBarActivity{
 	@Override
     protected void onStop() {
         super.onStop();
-        serverThread.interrupt();
+        receiverThread.interrupt();
     }
 	
-	private Handler getServerHandler(){
-		Handler handler = new Handler(){
+	private Handler getReceiverHandler(){
+		return new Handler(){
 			
 			@Override
 			public void handleMessage(Message msg) {
@@ -135,7 +146,7 @@ public class ServerActivity extends ActionBarActivity{
 				
 				switch(command.getAction()){
 				case Command.CONNECT:
-					Toast.makeText(getApplicationContext(), "Connect", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "Connected IP: " + command.getSenderIp(), Toast.LENGTH_LONG).show();
 					break;
 				case Command.DISCONNECT:
 					Toast.makeText(getApplicationContext(), "Disconnect", Toast.LENGTH_LONG).show();
@@ -143,14 +154,24 @@ public class ServerActivity extends ActionBarActivity{
 				case Command.VOTE_SONG:
 					Toast.makeText(getApplicationContext(), "Vote song: " + command.getData(), Toast.LENGTH_LONG).show();
 					break;
+				case Command.FETCH_SONGS:
+					Toast.makeText(getApplicationContext(), "Fetch song list from IP: " + command.getSenderIp(), Toast.LENGTH_LONG).show();
+					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, songQueue, QupApplication.IPADDRESS, command.getSenderIp()));
+					break;
 				default:
 					Toast.makeText(getApplicationContext(), "Command invalid", Toast.LENGTH_LONG).show();
 					break;
 				}
 			}
-			
 		};
-		
-		return handler;
+	}
+	
+	private void sendCommand(Command command){
+		Toast.makeText(getApplicationContext(), "sendCommand", Toast.LENGTH_SHORT).show();
+		new Thread(new SenderThread(command)).start();
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
 	}
 }

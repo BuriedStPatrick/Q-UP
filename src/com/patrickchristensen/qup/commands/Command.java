@@ -10,27 +10,57 @@ public class Command{
 	public static final int UPDATE_SONG_QUEUE = 4;
 	
 	private int		action;
-	private String	data;
+	private String senderIp;
+	private String receiverIp;
+	private Object	data;
 	
-	public Command(int action) {
-		this.action = action;
+	/**
+	 * 
+	 * @param action What do you want your receiver to do?
+	 * @param senderIp Who are you sending as?
+	 * @param receiverIp Who are you sending to?
+	 */
+	public Command(int action, String senderIp, String receiverIp) {
+		this(action, null, senderIp, receiverIp);
 	}
 	
-	public Command(int action, String data){
+	/**
+	 * 
+	 * @param action What do you want your receiver to do?
+	 * @param data The data you want to send to your receiver
+	 * @param senderIp Who are you sending as?
+	 * @param receiverIp Who are you sending to?
+	 */
+	public Command(int action, Object data, String senderIp, String receiverIp){
 		this.action = action;
 		this.data = data;
+		this.senderIp = senderIp;
+		this.receiverIp = receiverIp;
 	}
 	
 	public int getAction() {
 		return action;
 	}
 	
-	public String getData() {
+	public Object getData() {
 		return data;
 	}
 	
 	public void setData(String data){
 		this.data = data;
+	}
+	
+	public String getReceiverIp() {
+		return receiverIp;
+	}
+	
+	public String getSenderIp() {
+		return senderIp;
+	}
+	
+	@Override
+	public String toString() {
+		return "Sender: " + senderIp + ", Receiver: " + receiverIp + ", Action: " + action + ", Data: " + data;
 	}
 
 }

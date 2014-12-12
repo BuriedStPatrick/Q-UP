@@ -36,12 +36,17 @@ public class SongQueue extends Observable{
 		return _songs;
 	}
 	
+	public void updateSongs(ArrayList<Song> songs){
+		this.songs = songs;
+		notifyObservers();
+	}
+	
 	public ArrayList<Song> getSongs(){
 		return songs;
 	}
 	
 	public void registerVote(long songId){
-		notifyObservers(new Command(Command.UPDATE_SONG_QUEUE));
+		//TODO: notify that dataset has changed
 		for(Song song : songs){
 			
 		}

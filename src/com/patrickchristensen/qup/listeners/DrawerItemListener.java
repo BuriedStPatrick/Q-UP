@@ -25,12 +25,10 @@ public class DrawerItemListener implements ListView.OnItemClickListener{
 		case 0:
 			if(QupApplication.currentPage !=  0)
 				activity.startActivity(new Intent(QupApplication.appContext, ServerActivity.class));
-			QupApplication.currentPage = 0;
 			break;
 		case 1:
 			if(QupApplication.currentPage != 1)
 				activity.startActivity(new Intent(QupApplication.appContext, ClientActivity.class));
-			QupApplication.currentPage = 1;
 			break;
 		}
 	}

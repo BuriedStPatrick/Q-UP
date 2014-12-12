@@ -23,7 +23,5 @@
 		    android:layout_height="match_parent"
 		    android:entries="@array/menu_categories"
 		    android:layout_gravity="left"/>
-        
-        <include layout="@layout/client_layout"/>
     
     </android.support.v4.widget.DrawerLayout>

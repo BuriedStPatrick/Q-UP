@@ -1,15 +1,17 @@
 package com.patrickchristensen.qup;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -21,14 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.patrickchristensen.qup.adapters.SongAdapter;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.model.Song;
 import com.patrickchristensen.qup.model.SongQueue;
-import com.patrickchristensen.qup.threads.ClientThread;
+import com.patrickchristensen.qup.threads.ReceiverThread;
+import com.patrickchristensen.qup.threads.SenderThread;
+import com.patrickchristensen.qup.util.SongQueueDeserializer;
 
-public class ClientActivity extends Activity implements Observer{
+public class ClientActivity extends ActionBarActivity implements Observer{
 	
 	private SongQueue				songQueue;
 	
@@ -44,7 +49,10 @@ public class ClientActivity extends Activity implements Observer{
 	
 	private EditText 				serverIp;
 	private String 					serverIpAddress = "";
+	private final String 			actionBar = "Client";
 	private Button					connectBtn;
+	private Button					getSongsBtn;
+	private Thread					receiverThread;
 	
 	public static boolean			connected = false;
 	
@@ -59,6 +67,9 @@ public class ClientActivity extends Activity implements Observer{
 		songAdapter = new SongAdapter(this, songQueue);
 		initViews();
 		initDrawer();
+		QupApplication.currentPage = 1;
+		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
+		receiverThread.start();	//starts listening for connections in the background
 	}
 	
 	private void initViews(){
@@ -70,6 +81,7 @@ public class ClientActivity extends Activity implements Observer{
 		
 		serverIp = (EditText) findViewById(R.id.server_ip);
 		connectBtn = (Button) findViewById(R.id.connect_btn);
+		getSongsBtn = (Button) findViewById(R.id.getsongs_btn);
 		
 		//TODO: Move out to separate method
 		connectBtn.setOnClickListener(new OnClickListener() {
@@ -79,13 +91,60 @@ public class ClientActivity extends Activity implements Observer{
 				if(!connected){
 					serverIpAddress = serverIp.getText().toString();
 					if(!serverIpAddress.isEmpty()){
-						new Thread(new ClientThread(serverIpAddress, getClientHandler(), new Command(Command.CONNECT))).start();
+						new Thread(
+								new SenderThread(
+										new Command(Command.CONNECT, QupApplication.IPADDRESS, serverIpAddress)))
+											.start();
 					}
+				}
+			}
+		});
+		
+		getSongsBtn.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				if(!serverIpAddress.isEmpty()){
+					Toast.makeText(getApplicationContext(), QupApplication.IPADDRESS + "serverIP: " + serverIpAddress, Toast.LENGTH_SHORT).show();
+					new Thread(new SenderThread(new Command(Command.FETCH_SONGS, QupApplication.IPADDRESS, serverIpAddress))).start();
+				}else{
+					Toast.makeText(getApplicationContext(), "Please connect first", Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
 		queueList.setAdapter(songAdapter);
 		queueList.setOnItemClickListener(listQueueListener);
+		
+		if(toolbar != null){
+			toolbar.setTitle(actionBar);
+			setSupportActionBar(toolbar);
+		}
+	}
+	
+	private Handler getReceiverHandler(){
+		return new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				Gson json = new GsonBuilder()
+								.registerTypeAdapter(SongQueue.class, new SongQueueDeserializer())
+								.create();
+				
+				String data = msg.getData().getString("data");
+				Log.d("customtag", data);
+				Command command =
+						json.fromJson(data, Command.class);
+				
+				switch(command.getAction()){
+				case Command.UPDATE_SONG_QUEUE:
+					//TODO: update song queue from data-object
+//					songQueue = (SongQueue) command.getData();
+//					SongQueue _queue = json.fromJson(command.getData(), SongQueue.class);
+//					Log.d("customtag", "_queue is: " + _queue);
+//					songQueue.updateSongs(_queue.getSongs());
+					break;
+				}
+			}
+		};
 	}
 	
 	private void initDrawer(){
@@ -107,26 +166,6 @@ public class ClientActivity extends Activity implements Observer{
 		};
 		drawerLayout.setDrawerListener(drawerListener);
 		drawerList.setOnItemClickListener(new DrawerItemListener(this));
-	}
-	
-	private Handler getClientHandler(){
-		return new Handler(){
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				Gson json = new Gson();
-				Command command =
-						json.fromJson(msg.getData().getString("data"), Command.class);
-				
-				switch(command.getAction()){
-				//Receiving song list from server
-				case Command.FETCH_SONGS:
-					Toast.makeText(getApplicationContext(), "Fetching songs", Toast.LENGTH_LONG).show();
-					//TODO
-					break;
-				}
-			}
-		};
 	}
 	
 	private ListView.OnItemClickListener listQueueListener = new ListView.OnItemClickListener(){

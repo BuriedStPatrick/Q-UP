@@ -15,18 +15,16 @@ import android.util.Log;
 import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.util.Utils;
 
-public class ServerThread implements Runnable{
+public class ReceiverThread implements Runnable{
 	
 	
 	public static String serverIp = "";
 	
 	private Handler				handler;
 	private ServerSocket		serverSocket;
-	private ArrayList<Socket> 	clients;
 	
-	public ServerThread(Handler handler){
+	public ReceiverThread(Handler handler){
 		this.handler = handler;
-		clients = new ArrayList<Socket>();
 		serverIp = Utils.getIPAddress(true);
 	}
 
@@ -35,14 +33,12 @@ public class ServerThread implements Runnable{
 		try {
             if (serverIp != null) {
                 serverSocket = new ServerSocket(QupApplication.serverPort);
-                Log.d("customtag", "created serversocket with port: " + QupApplication.serverPort + ", IP: " + Utils.getIPAddress(true));
                 while (true) {
                     // LISTEN FOR INCOMING CLIENTS
                 	Socket client = serverSocket.accept(); // Blocking call
-                    clients.add(client);
                 	
                     try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(clients.get(clients.size()-1).getInputStream()));
+                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         String line = null;
                         while ((line = in.readLine()) != null) {
                         	Message msg = Message.obtain();
