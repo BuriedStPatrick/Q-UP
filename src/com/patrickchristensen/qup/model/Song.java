@@ -11,6 +11,7 @@ public class Song extends Observable{
 	private String artist;
 	private String album;
 	private Bitmap image;
+	private boolean isVoted;
 	private int votes;
 	
 	public Song(long songId, String title, String artist, String album, Bitmap image) {
@@ -52,6 +53,10 @@ public class Song extends Observable{
 	
 	public void addVote(){
 		votes++;
+	}
+	
+	public boolean isVoted(){
+		return isVoted;
 	}
 	
 	@Override

@@ -2,8 +2,11 @@ package com.patrickchristensen.qup.model;
 
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Observer;
 
+import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.commands.Command;
@@ -11,9 +14,16 @@ import com.patrickchristensen.qup.commands.Command;
 public class SongQueue extends Observable{
 	
 	private ArrayList<Song> songs;
+	private static SongQueue instance;
 	
-	public SongQueue() {
+	private SongQueue() {
 		songs = getSongsFromDisk();
+	}
+	
+	public static SongQueue getInstance(){
+		if(instance == null)
+			instance = new SongQueue();
+		return instance;
 	}
 	
 	/**
@@ -36,8 +46,17 @@ public class SongQueue extends Observable{
 		return _songs;
 	}
 	
+	@Override
+	public void addObserver(Observer observer) {
+		Toast.makeText(QupApplication.appContext, "adding observer: " + observer.toString(), Toast.LENGTH_SHORT).show();
+		super.addObserver(observer);
+	}
+	
 	public void updateSongs(ArrayList<Song> songs){
 		this.songs = songs;
+		Log.d("customtag", "in update songs");
+		Log.d("customtag", "songs is now: " + songs);
+		setChanged();
 		notifyObservers();
 	}
 	

@@ -1,6 +1,5 @@
 package com.patrickchristensen.qup;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -14,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,19 +21,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.patrickchristensen.qup.adapters.SongAdapter;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
-import com.patrickchristensen.qup.model.Song;
+import com.patrickchristensen.qup.listeners.SongVoteListener;
 import com.patrickchristensen.qup.model.SongQueue;
 import com.patrickchristensen.qup.threads.ReceiverThread;
 import com.patrickchristensen.qup.threads.SenderThread;
-import com.patrickchristensen.qup.util.SongQueueDeserializer;
 
-public class ClientActivity extends ActionBarActivity implements Observer{
+public class ClientActivity extends ActionBarActivity {
 	
-	private SongQueue				songQueue;
+	private SongQueue songQueue;
 	
 	private ActionBarDrawerToggle 	drawerListener;
 	private ListView				drawerList;
@@ -61,10 +57,10 @@ public class ClientActivity extends ActionBarActivity implements Observer{
 		super.onCreate(savedInstanceState);
 		QupApplication.appContext = getApplicationContext();
 		setContentView(R.layout.activity_client);
-		songQueue = new SongQueue();
+		songQueue = SongQueue.getInstance();
 		
 		pages = new ArrayAdapter<String>(this, R.id.drawer_list);
-		songAdapter = new SongAdapter(this, songQueue);
+		songAdapter = new SongAdapter(this);
 		initViews();
 		initDrawer();
 		QupApplication.currentPage = 1;
@@ -112,7 +108,7 @@ public class ClientActivity extends ActionBarActivity implements Observer{
 			}
 		});
 		queueList.setAdapter(songAdapter);
-		queueList.setOnItemClickListener(listQueueListener);
+		queueList.setOnItemClickListener(new SongVoteListener());
 		
 		if(toolbar != null){
 			toolbar.setTitle(actionBar);
@@ -125,22 +121,16 @@ public class ClientActivity extends ActionBarActivity implements Observer{
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
-				Gson json = new GsonBuilder()
-								.registerTypeAdapter(SongQueue.class, new SongQueueDeserializer())
-								.create();
-				
+				Gson json = new Gson();
 				String data = msg.getData().getString("data");
-				Log.d("customtag", data);
 				Command command =
 						json.fromJson(data, Command.class);
 				
 				switch(command.getAction()){
+				
 				case Command.UPDATE_SONG_QUEUE:
-					//TODO: update song queue from data-object
-//					songQueue = (SongQueue) command.getData();
-//					SongQueue _queue = json.fromJson(command.getData(), SongQueue.class);
-//					Log.d("customtag", "_queue is: " + _queue);
-//					songQueue.updateSongs(_queue.getSongs());
+					SongQueue _queue = json.fromJson(command.getData(), SongQueue.class);
+					songQueue.updateSongs(_queue.getSongs());
 					break;
 				}
 			}
@@ -166,26 +156,6 @@ public class ClientActivity extends ActionBarActivity implements Observer{
 		};
 		drawerLayout.setDrawerListener(drawerListener);
 		drawerList.setOnItemClickListener(new DrawerItemListener(this));
-	}
-	
-	private ListView.OnItemClickListener listQueueListener = new ListView.OnItemClickListener(){
-
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			//TODO: Vote on song
-			Toast.makeText(getApplicationContext(), "Voted on: " + position, Toast.LENGTH_SHORT).show();
-		}
-		
-	};
-
-	@Override
-	public void update(Observable observable, Object data) {
-		// TODO Auto-generated method stub
-		if(observable instanceof SongQueue){
-			SongQueue songQueue = (SongQueue) observable;
-			
-		}
 	}
 
 }

@@ -15,6 +15,6 @@ public class QupApplication extends Application{
 	public static Context appContext;
 	
 	//SET FALSE IN PROD
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 }

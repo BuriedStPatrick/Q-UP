@@ -27,7 +27,7 @@ import com.patrickchristensen.qup.threads.ReceiverThread;
 import com.patrickchristensen.qup.threads.SenderThread;
 import com.patrickchristensen.qup.util.Utils;
 
-public class ServerActivity extends ActionBarActivity implements Observer{
+public class ServerActivity extends ActionBarActivity {
 	
 	private final String actionBar = "Now Playing";
 	private SongQueue songQueue;
@@ -54,7 +54,7 @@ public class ServerActivity extends ActionBarActivity implements Observer{
 		receiverThread.start();	//starts listening for connections in the background
 		QupApplication.currentPage = 2;
 		serverStatus.setText("Listening on: " + Utils.getIPAddress(true));
-		songQueue = new SongQueue();
+		songQueue = SongQueue.getInstance();
 	}
 	
 	private void initView(){
@@ -156,7 +156,7 @@ public class ServerActivity extends ActionBarActivity implements Observer{
 					break;
 				case Command.FETCH_SONGS:
 					Toast.makeText(getApplicationContext(), "Fetch song list from IP: " + command.getSenderIp(), Toast.LENGTH_LONG).show();
-					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, songQueue, QupApplication.IPADDRESS, command.getSenderIp()));
+					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, json.toJson(songQueue), QupApplication.IPADDRESS, command.getSenderIp()));
 					break;
 				default:
 					Toast.makeText(getApplicationContext(), "Command invalid", Toast.LENGTH_LONG).show();
@@ -169,9 +169,5 @@ public class ServerActivity extends ActionBarActivity implements Observer{
 	private void sendCommand(Command command){
 		Toast.makeText(getApplicationContext(), "sendCommand", Toast.LENGTH_SHORT).show();
 		new Thread(new SenderThread(command)).start();
-	}
-
-	@Override
-	public void update(Observable observable, Object data) {
 	}
 }

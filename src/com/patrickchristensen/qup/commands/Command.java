@@ -12,7 +12,7 @@ public class Command{
 	private int		action;
 	private String senderIp;
 	private String receiverIp;
-	private Object	data;
+	private String	data;
 	
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class Command{
 	 * @param senderIp Who are you sending as?
 	 * @param receiverIp Who are you sending to?
 	 */
-	public Command(int action, Object data, String senderIp, String receiverIp){
+	public Command(int action, String data, String senderIp, String receiverIp){
 		this.action = action;
 		this.data = data;
 		this.senderIp = senderIp;
@@ -42,12 +42,8 @@ public class Command{
 		return action;
 	}
 	
-	public Object getData() {
+	public String getData() {
 		return data;
-	}
-	
-	public void setData(String data){
-		this.data = data;
 	}
 	
 	public String getReceiverIp() {
