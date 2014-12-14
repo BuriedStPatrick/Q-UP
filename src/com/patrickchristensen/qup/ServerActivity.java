@@ -42,15 +42,14 @@ public class ServerActivity extends QupActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		QupApplication.appContext = getApplicationContext();
+		QupApplication.currentPage = QupApplication.PAGE_SERVER;
 		setContentView(R.layout.activity_server);
+		super.onCreate(savedInstanceState);
 		initLogic();		
 		initView();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start();	//starts listening for connections in the background
 		serverStatus.setText("Listening on: " + Utils.getIPAddress(true));
-		QupApplication.currentPage = 2;
 	}
 	
 	private void initLogic(){

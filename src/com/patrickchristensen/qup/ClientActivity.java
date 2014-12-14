@@ -45,10 +45,10 @@ public class ClientActivity extends QupActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_client);
-		initViews();
 		QupApplication.currentPage = QupApplication.PAGE_CLIENT;
+		setContentView(R.layout.activity_client);
+		super.onCreate(savedInstanceState);
+		initViews();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start();
 	}
