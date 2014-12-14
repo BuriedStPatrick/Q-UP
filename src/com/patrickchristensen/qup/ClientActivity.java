@@ -2,34 +2,25 @@ package com.patrickchristensen.qup;
 
 import java.util.ArrayList;
 
-import android.content.res.Configuration;
-import android.graphics.Color;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.patrickchristensen.qup.adapters.SongAdapter;
 import com.patrickchristensen.qup.commands.Command;
-import com.patrickchristensen.qup.listeners.DrawerItemListener;
 import com.patrickchristensen.qup.listeners.SongVoteListener;
 import com.patrickchristensen.qup.model.Song;
-import com.patrickchristensen.qup.model.SongQueue;
 import com.patrickchristensen.qup.threads.ReceiverThread;
-import com.patrickchristensen.qup.threads.SenderThread;
 
 public class ClientActivity extends QupActivity {
 	
@@ -100,8 +91,17 @@ public class ClientActivity extends QupActivity {
 				switch(command.getAction()){
 				
 				case Command.UPDATE_SONG_QUEUE:
-					ArrayList<Song> _queue = (ArrayList<Song>) json.fromJson(command.getData(), ArrayList.class);
-					updateSongQueue(_queue);
+					ArrayList<Song> _songs = new ArrayList<Song>();
+					try {
+						JSONArray jArray = new JSONArray(command.getData());
+						for(int i = 0; i < jArray.length(); i++){
+							JSONObject jObject = jArray.getJSONObject(i);
+							_songs.add(new Song(jObject));
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					updateSongQueue(_songs);
 					break;
 				}
 			}

@@ -1,22 +1,28 @@
 package com.patrickchristensen.qup.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Observable;
-import java.util.Observer;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
-import android.util.SparseArray;
 import android.widget.Toast;
 
 import com.patrickchristensen.qup.QupApplication;
-import com.patrickchristensen.qup.commands.Command;
 
-public class SongQueue extends Observable implements Serializable{
+public class SongQueue extends Observable {
 	
-	private ArrayList<Song> songs;
+	private ArrayList<Song> 		songs;
+	private ContentResolver			musicResolver;
+	private Uri 					musicUri;
+	private Cursor 					musicCursor;
 	
 	public SongQueue() {
+		musicResolver = QupApplication.appContext.getContentResolver();
+		musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 		songs = getSongsFromDisk();
 	}
 	
@@ -33,8 +39,28 @@ public class SongQueue extends Observable implements Serializable{
 			_songs.add(new Song(0, "A Tribute to the Fallen", "Killswitch Engage", "Disarm the Descent", null, 57));
 			_songs.add(new Song(1, "Addicted to Pain", "Alter Bridge", "Fortress", null, 31));
 			_songs.add(new Song(2, "Over the Mountain", "Ozzy Osbourne", "Diary of a Madman", null, 42));
+			_songs.add(new Song(3, "Eyeless", "Slipknot", "Slipknot", null, 11));
+			_songs.add(new Song(4, "Dancers To A Discordant System", "Meshuggah", "ObZen", null, 26));
 		}else{
 			//TODO: load data from disk
+			musicCursor = musicResolver.query(musicUri, null, null, null, null);
+			if(musicCursor != null && musicCursor.moveToFirst()){
+				int titleColumn
+					= musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+				int idColumn
+					= musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+				int artistColumn
+					= musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+				int albumColumn
+					= musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ALBUM);
+				do{
+					long _id = musicCursor.getLong(idColumn);
+					String _title = musicCursor.getString(titleColumn);
+					String _artist = musicCursor.getString(artistColumn);
+					String _album = musicCursor.getString(albumColumn);
+					_songs.add(new Song(_id, _title, _artist, _album, null));
+				}while(musicCursor.moveToNext());
+			}
 			//TODO: load data from sqlite db
 		}
 		return _songs;
@@ -42,21 +68,18 @@ public class SongQueue extends Observable implements Serializable{
 	
 	public void updateSongs(ArrayList<Song> songs){
 		this.songs = songs;
-		Log.d("customtag", "in update songs");
-		Log.d("customtag", "songs is now: " + songs);
+		Collections.sort(songs, new Comparator<Song>(){
+			@Override
+			public int compare(Song a, Song b) {
+				return a.compareTo(b);
+			}
+		});
 		setChanged();
 		notifyObservers();
 	}
 	
 	public synchronized ArrayList<Song> getSongs(){
 		return songs;
-	}
-	
-	public void registerVote(long songId){
-		//TODO: notify that dataset has changed
-		for(Song song : songs){
-			
-		}
 	}
 	
 	@Override

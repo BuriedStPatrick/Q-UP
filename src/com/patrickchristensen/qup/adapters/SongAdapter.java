@@ -1,6 +1,5 @@
 package com.patrickchristensen.qup.adapters;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -54,9 +53,17 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 	}
 	
 	@Override
+	public long getItemId(int position) {
+		return getItem(position).getSongId();
+	}
+	
+	@Override
 	public void update(Observable observable, Object data) {
 		if(observable instanceof SongQueue){
 			notifyDataSetChanged();
+			SongQueue _queue = (SongQueue) observable;
+			clear();
+			addAll(_queue.getSongs());
 			Toast.makeText(QupApplication.appContext, "in the update method with: " + ((SongQueue)observable).toString(), Toast.LENGTH_SHORT).show();
 		}
 	}

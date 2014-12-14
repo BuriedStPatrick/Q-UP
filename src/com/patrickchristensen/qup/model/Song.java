@@ -2,9 +2,12 @@ package com.patrickchristensen.qup.model;
 
 import java.util.Observable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.Bitmap;
 
-public class Song extends Observable{
+public class Song extends Observable {
 	
 	private long songId;
 	private String title;
@@ -22,6 +25,14 @@ public class Song extends Observable{
 		this.image = image;
 	}
 	
+	public Song(JSONObject jObject) throws JSONException{
+		this.songId = jObject.getLong("songId");
+		this.title = jObject.getString("title");
+		this.artist = jObject.getString("artist");
+		this.album = jObject.getString("album");
+		this.isVoted = jObject.getBoolean("isVoted");
+		this.votes = jObject.getInt("votes");
+	}
 	public Song(long songId, String title, String artist, String album, Bitmap image, int votes) {
 		this(songId, title, artist, album, image);
 		this.votes = votes;
@@ -63,6 +74,14 @@ public class Song extends Observable{
 	public String toString() {
 		//TODO: Either fix ArrayAdapter to not use toString to fetch data or set this to be the same as in design requirements
 		return title + ": " + artist;
+	}
+	
+	public int compareTo(Song other) {
+		if(this.votes > other.getVotes())
+			return 1;
+		else if(this.votes < other.getVotes())
+			return -1;
+		return 0;
 	}
 	
 }

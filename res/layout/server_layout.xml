@@ -18,10 +18,18 @@
 	    android:textSize="24sp"
 	    />
     
+    <Button
+        android:id="@+id/queue_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PLAY QUEUE"
+        android:onClick="playSong"
+        />
+    
     <ListView
         android:id="@+id/queue_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/Ivory"
         />
 
