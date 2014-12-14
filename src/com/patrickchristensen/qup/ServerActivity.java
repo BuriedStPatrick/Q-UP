@@ -1,9 +1,9 @@
 package com.patrickchristensen.qup;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,34 +11,32 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.patrickchristensen.qup.adapters.SongAdapter;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.listeners.DrawerItemListener;
+import com.patrickchristensen.qup.listeners.SongVoteListener;
+import com.patrickchristensen.qup.model.Guest;
 import com.patrickchristensen.qup.model.SongQueue;
 import com.patrickchristensen.qup.threads.ReceiverThread;
 import com.patrickchristensen.qup.threads.SenderThread;
 import com.patrickchristensen.qup.util.Utils;
 
-public class ServerActivity extends ActionBarActivity {
+public class ServerActivity extends QupActivity {
 	
-	private final String actionBar = "Now Playing";
-	private SongQueue songQueue;
+	private SongQueue 				songQueue;
+	private ArrayList<Guest>		guests;
 	
-	private ActionBarDrawerToggle 	drawerListener;
-	private ListView				drawerList;
-	private DrawerLayout			drawerLayout;
-	private Toolbar					toolbar;
 	private TextView 				serverStatus;
-
-	private ArrayAdapter<String> 	pages;
+	private ListView				queueList;
 	
 	private Thread 					receiverThread;
 	
@@ -47,85 +45,24 @@ public class ServerActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		QupApplication.appContext = getApplicationContext();
 		setContentView(R.layout.activity_server);
-		
+		initLogic();		
 		initView();
-		initDrawer();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start();	//starts listening for connections in the background
-		QupApplication.currentPage = 2;
 		serverStatus.setText("Listening on: " + Utils.getIPAddress(true));
-		songQueue = SongQueue.getInstance();
+		QupApplication.currentPage = 2;
+	}
+	
+	private void initLogic(){
+		songQueue = new SongQueue();
+		guests = new ArrayList<Guest>();
 	}
 	
 	private void initView(){
-		toolbar = (Toolbar) findViewById(R.id.toolbar);
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		queueList = (ListView) findViewById(R.id.queue_list);
+		queueList.setAdapter(getSongAdapter());
+		queueList.setOnItemClickListener(new SongVoteListener());
 		serverStatus = (TextView) findViewById(R.id.server_status);
-		drawerList = (ListView) findViewById(R.id.drawer_list);
-		updateViews();
-	}
-	
-	private void initDrawer(){
-		pages = new ArrayAdapter<String>(this, R.id.drawer_list);
-		drawerListener = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer){
-			
-			@Override
-			public void onDrawerOpened(View drawerView) {
-				super.onDrawerOpened(drawerView);
-				invalidateOptionsMenu();
-				Toast.makeText(getApplicationContext(), "derp", Toast.LENGTH_SHORT).show();
-			}
-			
-			@Override
-			public void onDrawerClosed(View drawerView) {
-				super.onDrawerClosed(drawerView);
-				invalidateOptionsMenu();
-			}
-		};
-		drawerLayout.setDrawerListener(drawerListener);
-		drawerList.setOnItemClickListener(new DrawerItemListener(this));
-	}
-	
-	private void updateViews(){
-		if(toolbar != null){
-			toolbar.setTitle(actionBar);
-			setSupportActionBar(toolbar);
-		}
-	}
-	
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		drawerListener.syncState();
-	}
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-	    super.onConfigurationChanged(newConfig);
-	    drawerListener.onConfigurationChanged(newConfig);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		if(drawerListener.onOptionsItemSelected(item)){
-			invalidateOptionsMenu();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
@@ -155,8 +92,9 @@ public class ServerActivity extends ActionBarActivity {
 					Toast.makeText(getApplicationContext(), "Vote song: " + command.getData(), Toast.LENGTH_LONG).show();
 					break;
 				case Command.FETCH_SONGS:
-					Toast.makeText(getApplicationContext(), "Fetch song list from IP: " + command.getSenderIp(), Toast.LENGTH_LONG).show();
-					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, json.toJson(songQueue), QupApplication.IPADDRESS, command.getSenderIp()));
+					Gson gson = new Gson();
+					String data = gson.toJson(songQueue.getSongs());
+					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, data, QupApplication.IPADDRESS, command.getSenderIp()));
 					break;
 				default:
 					Toast.makeText(getApplicationContext(), "Command invalid", Toast.LENGTH_LONG).show();
@@ -164,10 +102,5 @@ public class ServerActivity extends ActionBarActivity {
 				}
 			}
 		};
-	}
-	
-	private void sendCommand(Command command){
-		Toast.makeText(getApplicationContext(), "sendCommand", Toast.LENGTH_SHORT).show();
-		new Thread(new SenderThread(command)).start();
 	}
 }

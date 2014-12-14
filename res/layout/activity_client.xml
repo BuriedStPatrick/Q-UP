@@ -8,11 +8,24 @@
     android:background="@android:color/white"
     tools:context=".ClientActivity">
     
-    <include layout="@layout/toolbar" />
     
-    <include layout="@layout/client_layout"/>
+    <include layout="@layout/toolbar"/>
+    <android.support.v4.widget.DrawerLayout
+	    android:id="@+id/drawer_layout"
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@android:color/white"
+	    tools:context="com.patrickchristensen.qup.ClientActivity"
+	    android:layout_gravity="left"
+	    >
+	    
+		<include layout="@layout/client_layout"/>
+		<include layout="@layout/drawer_layout"/>
+	
+	</android.support.v4.widget.DrawerLayout>
     
-    <include layout="@layout/drawer_layout"/>
     
 	
 	    

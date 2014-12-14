@@ -15,6 +15,14 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:text="@string/no_connection"
-	    android:textSize="24sp"/>
+	    android:textSize="24sp"
+	    />
+    
+    <ListView
+        android:id="@+id/queue_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/Ivory"
+        />
 
 </LinearLayout>

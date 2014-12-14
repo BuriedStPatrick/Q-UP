@@ -15,6 +15,7 @@
 	        android:id="@+id/song_title"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
+	        android:textColor="@android:color/black"
 	        android:alpha="87"
 	        />
 	    
@@ -22,18 +23,17 @@
 	        android:id="@+id/song_artist"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
+	        android:textColor="@android:color/black"
 	        android:alpha="54"
 	        />
 	    
 	</LinearLayout>
 	
-    <ImageButton
+    <ImageView
         android:id="@+id/song_votebtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/queue_btn"
         android:layout_alignRight="@layout/queue_list_row"
-        android:onClick="voteSong"
         android:contentDescription="@string/vote_song"
         />
 	

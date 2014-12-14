@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.R;
@@ -21,14 +22,13 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 	
 	public SongAdapter(Context context, SongQueue queue) {
         super(context, R.id.queue_list, queue.getSongs());
-        SongQueue.getInstance().addObserver(this);
+        queue.addObserver(this);
         notifyDataSetChanged();
     }
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
-		SongQueue _queue = SongQueue.getInstance();
 		if(row == null){
 			LayoutInflater inflater
 						= (LayoutInflater) QupApplication.appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,9 +45,10 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 		Song song = (Song) getItem(position);
 		holder.title.setText(song.getTitle());
 		holder.artist.setText(song.getArtist());
-		if(song.isVoted()){
+		if(!song.isVoted())
 			holder.queueBtn.setImageResource(R.drawable.queue_btn);
-		}
+		else
+			holder.queueBtn.setImageResource(R.drawable.queue_btn_select);
 		
 		return row;
 	}
@@ -56,6 +57,7 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 	public void update(Observable observable, Object data) {
 		if(observable instanceof SongQueue){
 			notifyDataSetChanged();
+			Toast.makeText(QupApplication.appContext, "in the update method with: " + ((SongQueue)observable).toString(), Toast.LENGTH_SHORT).show();
 		}
 	}
 	

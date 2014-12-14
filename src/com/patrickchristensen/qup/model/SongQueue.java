@@ -1,5 +1,6 @@
 package com.patrickchristensen.qup.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -11,19 +12,12 @@ import android.widget.Toast;
 import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.commands.Command;
 
-public class SongQueue extends Observable{
+public class SongQueue extends Observable implements Serializable{
 	
 	private ArrayList<Song> songs;
-	private static SongQueue instance;
 	
-	private SongQueue() {
+	public SongQueue() {
 		songs = getSongsFromDisk();
-	}
-	
-	public static SongQueue getInstance(){
-		if(instance == null)
-			instance = new SongQueue();
-		return instance;
 	}
 	
 	/**
@@ -46,12 +40,6 @@ public class SongQueue extends Observable{
 		return _songs;
 	}
 	
-	@Override
-	public void addObserver(Observer observer) {
-		Toast.makeText(QupApplication.appContext, "adding observer: " + observer.toString(), Toast.LENGTH_SHORT).show();
-		super.addObserver(observer);
-	}
-	
 	public void updateSongs(ArrayList<Song> songs){
 		this.songs = songs;
 		Log.d("customtag", "in update songs");
@@ -60,7 +48,7 @@ public class SongQueue extends Observable{
 		notifyObservers();
 	}
 	
-	public ArrayList<Song> getSongs(){
+	public synchronized ArrayList<Song> getSongs(){
 		return songs;
 	}
 	
@@ -69,6 +57,11 @@ public class SongQueue extends Observable{
 		for(Song song : songs){
 			
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return songs.toString();
 	}
 
 }
