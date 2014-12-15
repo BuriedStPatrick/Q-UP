@@ -18,23 +18,24 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.patrickchristensen.qup.commands.Command;
+import com.patrickchristensen.qup.listeners.PlaybackStateListener;
 import com.patrickchristensen.qup.listeners.SongVoteListener;
 import com.patrickchristensen.qup.model.Guest;
 import com.patrickchristensen.qup.model.SongQueue;
-import com.patrickchristensen.qup.services.QupMusicService;
-import com.patrickchristensen.qup.services.QupMusicService.MusicBinder;
+import com.patrickchristensen.qup.services.MusicService;
+import com.patrickchristensen.qup.services.MusicService.MusicBinder;
 import com.patrickchristensen.qup.threads.ReceiverThread;
 import com.patrickchristensen.qup.util.Utils;
 
-public class ServerActivity extends QupActivity {
+public class ServerActivity extends QupActivity implements PlaybackStateListener{
 
 	private SongQueue 					songQueue;
 	private ArrayList<Guest> 			guests;
-	private QupMusicService 			musicService;
 	private Intent 						playIntent;
 	private boolean 					musicBound = false;
 	private boolean 					isPlaying = false;
 	private Button						queuePlayBtn;
+	private MusicService				musicService;
 
 	private TextView 					serverStatus;
 	private ListView 					queueList;
@@ -53,22 +54,7 @@ public class ServerActivity extends QupActivity {
 								// background
 		serverStatus.setText("Listening on: " + Utils.getIPAddress(true));
 	}
-
-	private void initLogic() {
-		songQueue = new SongQueue();
-		guests = new ArrayList<Guest>();
-	}
-
-	private void initView() {
-		queueList = (ListView) findViewById(R.id.queue_list);
-		queueList.setAdapter(getSongAdapter());
-		queueList.setOnItemClickListener(new SongVoteListener());
-		serverStatus = (TextView) findViewById(R.id.server_status);
-	}
-	
-	
-	private class MusicConnection implements ServiceConnection{
-
+	private ServiceConnection musicConnection =  new ServiceConnection(){
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			MusicBinder binder = (MusicBinder) service;
@@ -83,7 +69,18 @@ public class ServerActivity extends QupActivity {
 		public void onServiceDisconnected(ComponentName name) {
 			musicBound = false;
 		}
-		
+	};
+
+	private void initLogic() {
+		songQueue = new SongQueue();
+		guests = new ArrayList<Guest>();
+	}
+
+	private void initView() {
+		queueList = (ListView) findViewById(R.id.queue_list);
+		queueList.setAdapter(getSongAdapter());
+		queueList.setOnItemClickListener(new SongVoteListener());
+		serverStatus = (TextView) findViewById(R.id.server_status);
 	}
 
 	public void playSong(View v) {
@@ -105,15 +102,17 @@ public class ServerActivity extends QupActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Toast.makeText(getApplicationContext(), "I'm here", Toast.LENGTH_SHORT).show();
-		Intent playIntent = new Intent(this, MusicBinder.class);
-		bindService(playIntent, new MusicConnection(), ServerActivity.this.BIND_AUTO_CREATE);
-		startService(playIntent);
+		if(playIntent == null){
+			Toast.makeText(getApplicationContext(), "I'm here", Toast.LENGTH_SHORT).show();
+			playIntent = new Intent(this, MusicService.class);
+			getApplicationContext().bindService(playIntent, musicConnection, BIND_AUTO_CREATE);
+			startService(playIntent);
+		}
 	}
 
 	private Handler getReceiverHandler() {
 		return new Handler() {
-
+			
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
@@ -156,5 +155,10 @@ public class ServerActivity extends QupActivity {
 		stopService(playIntent);
 		musicService = null;
 		super.onDestroy();
+	}
+
+	@Override
+	public void notifyPlaybackStateChanged() {
+		
 	}
 }

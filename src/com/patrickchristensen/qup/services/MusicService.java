@@ -23,28 +23,19 @@ import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.model.Song;
 import com.patrickchristensen.qup.model.SongQueue;
 
-public class QupMusicService extends Service implements OnPreparedListener,
+public class MusicService extends Service implements OnPreparedListener,
 		OnErrorListener, OnCompletionListener, Observer {
 
 	private final IBinder musicBinder = new MusicBinder();
 	private MediaPlayer player;
 	private ArrayList<Song> songs;
-	private int songPos;
+	private final static int SONG_POS = 0;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		songPos = 0;
 		player = new MediaPlayer();
 		initMusicPlayer();
-		
-		Log.d("customtag", "in onCreate in MusicService");
-	}
-	
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d("customtag", "startedcommand");
-		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private void initMusicPlayer() {
@@ -60,7 +51,7 @@ public class QupMusicService extends Service implements OnPreparedListener,
 	
 	public void playSong() {
 		player.reset();
-		Song playSong = songs.get(songPos);
+		Song playSong = songs.get(SONG_POS);
 		long currSong = playSong.getSongId();
 		Uri trackUri = ContentUris.withAppendedId(
 				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -87,8 +78,8 @@ public class QupMusicService extends Service implements OnPreparedListener,
 
 	public class MusicBinder extends Binder {
 		
-		public QupMusicService getService() {
-			return QupMusicService.this;
+		public MusicService getService() {
+			return MusicService.this;
 		}
 	}
 
@@ -103,6 +94,7 @@ public class QupMusicService extends Service implements OnPreparedListener,
 		player.release();
 		return false;
 	}
+	
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
