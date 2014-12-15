@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -18,7 +19,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.patrickchristensen.qup.commands.Command;
-import com.patrickchristensen.qup.listeners.SongVoteListener;
 import com.patrickchristensen.qup.model.Song;
 import com.patrickchristensen.qup.threads.ReceiverThread;
 
@@ -106,6 +106,18 @@ public class ClientActivity extends QupActivity {
 				}
 			}
 		};
+	}
+	
+	private class SongVoteListener implements ListView.OnItemClickListener{
+		
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			//TODO: Vote on song
+			Toast.makeText(QupApplication.appContext, "Voted on: " + id, Toast.LENGTH_SHORT).show();
+			sendCommand(new Command(Command.VOTE_SONG, id + "", QupApplication.IPADDRESS, serverIpAddress ));
+		}
+
 	}
 	
 	@Override

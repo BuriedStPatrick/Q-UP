@@ -43,7 +43,7 @@ public class QupActivity extends ActionBarActivity{
 	}
 	
 	private void initLogic(){
-		songAdapter = new SongAdapter(this, (songQueue = new SongQueue()));
+		songAdapter = new SongAdapter(this, (songQueue = new SongQueue(this)));
 		songAdapter.notifyDataSetChanged();
 	}
 	

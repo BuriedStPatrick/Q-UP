@@ -21,7 +21,7 @@ public class ReceiverThread implements Runnable{
 	public static String serverIp = "";
 	
 	private Handler				handler;
-	private ServerSocket		serverSocket;
+	private ServerSocket		receiverSocket;
 	
 	public ReceiverThread(Handler handler){
 		this.handler = handler;
@@ -32,34 +32,33 @@ public class ReceiverThread implements Runnable{
 	public void run() {
 		try {
             if (serverIp != null) {
-                serverSocket = new ServerSocket(QupApplication.serverPort);
+                receiverSocket = new ServerSocket(QupApplication.serverPort);
                 while (true) {
                     // LISTEN FOR INCOMING CLIENTS
-                	Socket client = serverSocket.accept(); // Blocking call
-                	
-                    try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        String line = null;
-                        while ((line = in.readLine()) != null) {
-                        	Message msg = Message.obtain();
-                        	Bundle bundle = new Bundle();
-                        	bundle.putString("data", line);
-                        	msg.setData(bundle);
-                        	handler.sendMessage(msg);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                	Socket client = receiverSocket.accept(); // Blocking call
+                			try {
+    	                        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    	                        String line = null;
+    	                        while ((line = in.readLine()) != null) {
+    	                        	Message msg = Message.obtain();
+    	                        	Bundle bundle = new Bundle();
+    	                        	bundle.putString("data", line);
+    	                        	msg.setData(bundle);
+    	                        	handler.sendMessage(msg);
+    	                        }
+    	                    } catch (Exception e) {
+    	                        e.printStackTrace();
+    	                    }
+                		}     
+                	}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void stop(){
 		try {
-			serverSocket.close();
+			receiverSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

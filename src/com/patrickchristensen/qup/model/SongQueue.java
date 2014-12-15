@@ -6,12 +6,12 @@ import java.util.Comparator;
 import java.util.Observable;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.patrickchristensen.qup.QupApplication;
+import com.patrickchristensen.qup.util.QupDBAdapter;
 
 public class SongQueue extends Observable {
 	
@@ -20,10 +20,19 @@ public class SongQueue extends Observable {
 	private Uri 					musicUri;
 	private Cursor 					musicCursor;
 	
-	public SongQueue() {
-		musicResolver = QupApplication.appContext.getContentResolver();
+	private QupDBAdapter			dbAdapter;
+	
+	public SongQueue(Context context) {
+		musicResolver = context.getContentResolver();
+		dbAdapter = new QupDBAdapter(context);
 		musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 		songs = getSongsFromDisk();
+		Collections.sort(songs, new Comparator<Song>(){
+			@Override
+			public int compare(Song a, Song b) {
+				return a.compareTo(b);
+			}
+		});
 	}
 	
 	/**
@@ -62,13 +71,16 @@ public class SongQueue extends Observable {
 				}while(musicCursor.moveToNext());
 			}
 			//TODO: load data from sqlite db
+			for(Song _song : _songs){
+				dbAdapter.insertSong(_song.getSongId(), _song.getVotes());
+			}
 		}
 		return _songs;
 	}
 	
 	public void updateSongs(ArrayList<Song> songs){
 		this.songs = songs;
-		Collections.sort(songs, new Comparator<Song>(){
+		Collections.sort(this.songs, new Comparator<Song>(){
 			@Override
 			public int compare(Song a, Song b) {
 				return a.compareTo(b);
@@ -76,6 +88,28 @@ public class SongQueue extends Observable {
 		});
 		setChanged();
 		notifyObservers();
+	}
+	
+	public synchronized void registerVote(long songId){
+		for(Song song : songs){
+			if(song.getSongId() == songId){
+				song.addVote();
+				dbAdapter.updateSong(songId, song.getVotes());
+				break;
+			}
+		}
+		updateSongs(songs); //yeah, it's stupid but whatever I'm tired
+	}
+	
+	public synchronized void resetVotes(Song song){
+		for(Song _song : songs){
+			if(_song.getSongId() == song.getSongId()){
+				_song.resetVotes();
+				dbAdapter.updateSong(_song.getSongId(), _song.getVotes());
+				break;
+			}
+		}
+		updateSongs(songs); //yeah, it's stupid but whatever I'm tired
 	}
 	
 	public synchronized ArrayList<Song> getSongs(){

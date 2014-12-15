@@ -1,7 +1,9 @@
 package com.patrickchristensen.qup.listeners;
 
-public interface PlaybackStateListener {
-	
-	public void notifyPlaybackStateChanged();
+import com.patrickchristensen.qup.model.Song;
 
+public interface PlaybackStateListener {
+
+	public void onSongCompleted(Song song);
+	
 }

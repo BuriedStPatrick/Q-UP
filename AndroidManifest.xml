@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="15"
+        android:minSdkVersion="16"
         android:targetSdkVersion="21" />
     
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -33,12 +33,12 @@
             </intent-filter>
         </activity>
         
-<!--         <activity android:name=".ClientActivity"> -->
+        <activity android:name=".ClientActivity">
 <!--             <intent-filter> -->
 <!--                 <action android:name="android.intent.action.MAIN" /> -->
 <!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
 <!--             </intent-filter> -->
-<!--         </activity> -->
+        </activity>
         
   		<service android:enabled="true" android:name="com.patrickchristensen.qup.services.MusicService"/>
     </application>

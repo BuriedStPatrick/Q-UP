@@ -17,6 +17,10 @@ public class Song extends Observable {
 	private boolean isVoted;
 	private int votes;
 	
+	public Song(){
+		
+	}
+	
 	public Song(long songId, String title, String artist, String album, Bitmap image) {
 		this.songId = songId;
 		this.title = title;
@@ -66,6 +70,10 @@ public class Song extends Observable {
 		votes++;
 	}
 	
+	public void resetVotes(){
+		this.votes = 0;
+	}
+	
 	public boolean isVoted(){
 		return isVoted;
 	}
@@ -77,11 +85,7 @@ public class Song extends Observable {
 	}
 	
 	public int compareTo(Song other) {
-		if(this.votes > other.getVotes())
-			return 1;
-		else if(this.votes < other.getVotes())
-			return -1;
-		return 0;
+		return other.getVotes() - this.votes;
 	}
 	
 }
