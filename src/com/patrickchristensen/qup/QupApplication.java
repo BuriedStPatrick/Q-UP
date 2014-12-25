@@ -17,7 +17,8 @@ public class QupApplication extends Application{
 	public static int currentPage = 0;
 	public static Context appContext;
 	
-	//SET FALSE IN PROD
-	public static final boolean DEBUG = false;
+	//SET FALSE ON SERVER
+	//SET TRUE ON CLIENT
+	public static final boolean DEBUG = true;
 
 }

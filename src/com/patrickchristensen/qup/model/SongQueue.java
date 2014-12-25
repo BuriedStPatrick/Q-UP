@@ -115,10 +115,5 @@ public class SongQueue extends Observable {
 	public synchronized ArrayList<Song> getSongs(){
 		return songs;
 	}
-	
-	@Override
-	public String toString() {
-		return songs.toString();
-	}
 
 }

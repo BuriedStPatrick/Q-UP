@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 
-public class Song extends Observable {
+public class Song {
 	
 	private long songId;
 	private String title;
@@ -16,10 +16,6 @@ public class Song extends Observable {
 	private Bitmap image;
 	private boolean isVoted;
 	private int votes;
-	
-	public Song(){
-		
-	}
 	
 	public Song(long songId, String title, String artist, String album, Bitmap image) {
 		this.songId = songId;
@@ -37,6 +33,7 @@ public class Song extends Observable {
 		this.isVoted = jObject.getBoolean("isVoted");
 		this.votes = jObject.getInt("votes");
 	}
+	
 	public Song(long songId, String title, String artist, String album, Bitmap image, int votes) {
 		this(songId, title, artist, album, image);
 		this.votes = votes;
@@ -76,12 +73,6 @@ public class Song extends Observable {
 	
 	public boolean isVoted(){
 		return isVoted;
-	}
-	
-	@Override
-	public String toString() {
-		//TODO: Either fix ArrayAdapter to not use toString to fetch data or set this to be the same as in design requirements
-		return title + ": " + artist;
 	}
 	
 	public int compareTo(Song other) {

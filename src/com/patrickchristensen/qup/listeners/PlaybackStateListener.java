@@ -4,6 +4,6 @@ import com.patrickchristensen.qup.model.Song;
 
 public interface PlaybackStateListener {
 
-	public void onSongCompleted(Song song);
+	public void onPlaybackCompleted(Song song);
 	
 }

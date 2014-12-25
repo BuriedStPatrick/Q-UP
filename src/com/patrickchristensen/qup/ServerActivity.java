@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.patrickchristensen.qup.commands.Command;
 import com.patrickchristensen.qup.controllers.MusicController;
 import com.patrickchristensen.qup.listeners.PlaybackStateListener;
-import com.patrickchristensen.qup.listeners.PlaybackStateListener;
 import com.patrickchristensen.qup.model.Guest;
 import com.patrickchristensen.qup.model.Song;
 import com.patrickchristensen.qup.model.SongQueue;
@@ -84,18 +83,18 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		guests = new ArrayList<Guest>();
 	}
 	
+	private void initView() {
+		queueList = (ListView) findViewById(R.id.queue_list);
+		queueList.setAdapter(getSongAdapter());
+		serverStatus = (TextView) findViewById(R.id.server_status);
+	}
+	
 	private void setMusicController(){
 		musicController = new MusicController(this);
 		musicController.setMediaPlayer(this);
 		musicController.setAnchorView(findViewById(R.id.queue_list));
 		musicController.setEnabled(true);
 		
-	}
-
-	private void initView() {
-		queueList = (ListView) findViewById(R.id.queue_list);
-		queueList.setAdapter(getSongAdapter());
-		serverStatus = (TextView) findViewById(R.id.server_status);
 	}
 	
 	@Override
@@ -261,7 +260,7 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 	}
 
 	@Override
-	public void onSongCompleted(Song song) {
+	public void onPlaybackCompleted(Song song) {
 		Toast.makeText(getApplicationContext(), "Song is completed", Toast.LENGTH_SHORT).show();
 		songQueue.resetVotes(song);
 	}

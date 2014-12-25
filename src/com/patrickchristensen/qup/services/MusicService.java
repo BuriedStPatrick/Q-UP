@@ -105,7 +105,7 @@ public class MusicService extends Service implements OnPreparedListener,
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 	 	player.reset();
-		callbackListener.onSongCompleted(songs.get(SONG_POS));
+		callbackListener.onPlaybackCompleted(songs.get(SONG_POS));
 	}
 
 	@Override
