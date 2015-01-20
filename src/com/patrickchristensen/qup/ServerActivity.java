@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
@@ -36,7 +37,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 	
 	private SongQueue 					songQueue;
 	private ArrayList<Guest> 			guests;
-	private Button						queuePlayBtn;
 
 	private TextView 					serverStatus;
 	private ListView 					queueList;
@@ -69,7 +69,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 			songQueue.addObserver(musicService);
 			musicService.setCallbackListener(ServerActivity.this);
 			isMusicBound = true;
-			queuePlayBtn = (Button) findViewById(R.id.queue_play);
 		}
 		
 		@Override
@@ -86,6 +85,7 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 	private void initView() {
 		queueList = (ListView) findViewById(R.id.queue_list);
 		queueList.setAdapter(getSongAdapter());
+		queueList.setOnItemClickListener(new SongVoteListener());
 		serverStatus = (TextView) findViewById(R.id.server_status);
 	}
 	
@@ -94,6 +94,18 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		musicController.setMediaPlayer(this);
 		musicController.setAnchorView(findViewById(R.id.queue_list));
 		musicController.setEnabled(true);
+		
+	}
+	
+	private class SongVoteListener implements ListView.OnItemClickListener{
+		
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			//TODO: Vote on song
+			Toast.makeText(getApplicationContext(), "Voted: " + id, Toast.LENGTH_SHORT).show();
+			songQueue.registerVote(id);
+		}
 		
 	}
 	
@@ -130,7 +142,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 	protected void onStart() {
 		super.onStart();
 		if(playIntent == null){
-			Toast.makeText(getApplicationContext(), "I'm here", Toast.LENGTH_SHORT).show();
 			playIntent = new Intent(this, MusicService.class);
 			getApplicationContext().bindService(playIntent, musicConnection, BIND_AUTO_CREATE);
 			startService(playIntent);
@@ -146,6 +157,7 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 				Gson json = new Gson();
 				Command command = json.fromJson(
 						msg.getData().getString("data"), Command.class);
+				String data = command.getData();
 
 				switch (command.getAction()) {
 				case Command.CONNECT:
@@ -169,11 +181,14 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 							"Vote song: " + command.getData(),
 							Toast.LENGTH_LONG).show();
 					songQueue.registerVote(Long.parseLong(command.getData()));
-					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, QupApplication.IPADDRESS, command.getSenderIp()));
+					json = new Gson();
+					data = json.toJson(songQueue.getSongs());
+					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, data,
+							QupApplication.IPADDRESS, command.getSenderIp()));
 					break;
 				case Command.FETCH_SONGS:
-					Gson gson = new Gson();
-					String data = gson.toJson(songQueue.getSongs());
+					json = new Gson();
+					data = json.toJson(songQueue.getSongs());
 					sendCommand(new Command(Command.UPDATE_SONG_QUEUE, data,
 							QupApplication.IPADDRESS, command.getSenderIp()));
 					break;

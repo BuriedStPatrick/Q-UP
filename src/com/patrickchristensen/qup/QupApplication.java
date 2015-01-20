@@ -19,6 +19,6 @@ public class QupApplication extends Application{
 	
 	//SET FALSE ON SERVER
 	//SET TRUE ON CLIENT
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 }

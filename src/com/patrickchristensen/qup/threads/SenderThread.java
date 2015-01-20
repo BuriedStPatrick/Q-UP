@@ -18,6 +18,7 @@ import com.patrickchristensen.qup.ClientActivity;
 import com.patrickchristensen.qup.QupApplication;
 import com.patrickchristensen.qup.commands.Command;
 
+//TODO: Turn into AsyncTask
 public class SenderThread implements Runnable{
 	
 	private String receiverIpAddress;

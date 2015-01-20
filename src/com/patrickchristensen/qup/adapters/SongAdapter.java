@@ -35,7 +35,6 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder.title = (TextView) row.findViewById(R.id.song_title);
 			viewHolder.artist = (TextView) row.findViewById(R.id.song_artist);
-			viewHolder.queueBtn = (ImageView) row.findViewById(R.id.song_votebtn);
 			row.setTag(viewHolder);
 		}
 		
@@ -44,10 +43,6 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 		Song song = (Song) getItem(position);
 		holder.title.setText(song.getTitle());
 		holder.artist.setText(song.getArtist());
-		if(!song.isVoted())
-			holder.queueBtn.setImageResource(R.drawable.queue_btn);
-		else
-			holder.queueBtn.setImageResource(R.drawable.queue_btn_select);
 		
 		return row;
 	}
@@ -64,14 +59,13 @@ public class SongAdapter extends ArrayAdapter<Song> implements Observer{
 			SongQueue _queue = (SongQueue) observable;
 			clear();
 			addAll(_queue.getSongs());
-			Toast.makeText(QupApplication.appContext, "in the update method with: " + ((SongQueue)observable).toString(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext().getApplicationContext(), _queue.toString(), Toast.LENGTH_SHORT).show();
 		}
 	}
 	
 	private static class ViewHolder{
 		public TextView title;
 		public TextView artist;
-		public ImageView queueBtn;
 	}
 
 }

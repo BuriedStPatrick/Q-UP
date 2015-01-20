@@ -13,6 +13,7 @@
     <string name="no_connection">No connection</string>
     <string name="action_example">Example action</string>
     <string name="vote_song">Vote song</string>
+    <string name="song_cover">The songs cover art</string>
     
 <!--     HINTS -->
     <string name="hint_server_connect">Connect</string>

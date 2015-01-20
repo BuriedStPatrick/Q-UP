@@ -27,7 +27,7 @@ public class ClientActivity extends QupActivity {
 	private ListView				queueList;
 	
 	private EditText 				serverIp;
-	private String 					serverIpAddress = "";
+	private String 					serverIpAddress;
 	private Button					connectBtn;
 	private Button					getSongsBtn;
 	private Thread					receiverThread;
@@ -39,6 +39,9 @@ public class ClientActivity extends QupActivity {
 		QupApplication.currentPage = QupApplication.PAGE_CLIENT;
 		setContentView(R.layout.activity_client);
 		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null){
+			serverIpAddress = savedInstanceState.getString("serverIpAddress");
+		}
 		initViews();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start();
@@ -54,7 +57,6 @@ public class ClientActivity extends QupActivity {
 		connectBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				serverIpAddress = serverIp.getText().toString();
 				if(!connected){
 					serverIpAddress = serverIp.getText().toString();
 					if(!serverIpAddress.isEmpty()){
@@ -129,7 +131,17 @@ public class ClientActivity extends QupActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
+		receiverThread.start();
 		getSongAdapter().notifyDataSetChanged();
+	}
+	
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		if(serverIpAddress != null)
+			outState.putString("serverIpAddress", serverIpAddress);
+		super.onSaveInstanceState(outState);
 	}
 
 }

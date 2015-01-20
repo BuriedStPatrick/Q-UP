@@ -40,7 +40,7 @@ public class QupDBAdapter {
 	private static class SQLiteHelper extends SQLiteOpenHelper {
 		
 		private static final String 		DATABASE_NAME = "qup.db";
-		private static final int 			DATABASE_VERSION = 1;
+		private static final int 			DATABASE_VERSION = 2;
 		
 		private static final String 		TABLE_SONGVOTES = "SONGVOTES";
 		private static final String 		UID = "_id";

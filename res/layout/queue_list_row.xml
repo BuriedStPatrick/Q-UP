@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="75dp"
+    android:padding="5dp"
+    android:orientation="horizontal"
     >
     
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="5dp">
-	    
-	    <TextView
-	        android:id="@+id/song_title"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:textColor="@android:color/black"
-	        android:alpha="87"
-	        />
-	    
-	    <TextView
-	        android:id="@+id/song_artist"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:textColor="@android:color/black"
-	        android:alpha="54"
-	        />
-	    
-	</LinearLayout>
-	
     <ImageView
-        android:id="@+id/song_votebtn"
+        android:id="@+id/song_cover"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@layout/queue_list_row"
-        android:contentDescription="@string/vote_song"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/song_cover"
+        android:src="@drawable/generictrack"
+        android:adjustViewBounds="true"
         />
-	
-</RelativeLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+        	android:orientation="vertical"
+        	android:layout_alignParentBottom="true">
+        
+		    <TextView
+		        android:id="@+id/song_title"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textColor="@android:color/black"
+		        android:alpha="87"
+		        />
+		    
+		    <TextView
+		        android:id="@+id/song_artist"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textColor="@android:color/black"
+		        android:alpha="54"
+		        />
+	    
+	    </LinearLayout>
+    
+</LinearLayout>
