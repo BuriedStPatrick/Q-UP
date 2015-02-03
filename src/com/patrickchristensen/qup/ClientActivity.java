@@ -42,6 +42,7 @@ public class ClientActivity extends QupActivity {
 		if(savedInstanceState != null){
 			serverIpAddress = savedInstanceState.getString("serverIpAddress");
 		}
+		
 		initLogic();
 		initView();
 		initDrawer();
