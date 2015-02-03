@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 public class QupDBAdapter {
 	
 	private SQLiteHelper dbHelper; //Lets us communicate with the database
+	private Context context;
 	
 	/**
 	 * The constructor of this adapter
@@ -16,6 +18,7 @@ public class QupDBAdapter {
 	 */
 	public QupDBAdapter(Context context) {
 		dbHelper = new SQLiteHelper(context);
+		this.context = context;
 	}
 	
 	/**
@@ -60,6 +63,27 @@ public class QupDBAdapter {
 		return 0;
 	}
 	
+	public long getMostPopular(){
+		String query = "SELECT " + SQLiteHelper.UID +", MAX("+SQLiteHelper.VOTES+") FROM " + SQLiteHelper.TABLE_SONGVOTES;
+		Cursor result = dbHelper.getWritableDatabase().rawQuery(query, null);
+		if(result.moveToFirst()){
+			int index = result.getColumnIndex(SQLiteHelper.UID);
+			return result.getLong(index);
+		}
+		return 0;
+	}
+	
+	public String printDB(){
+		String res = "";
+		String query = "SELECT * FROM " + SQLiteHelper.TABLE_SONGVOTES;
+		Cursor result = dbHelper.getWritableDatabase().rawQuery(query, null);
+		while(result.moveToNext()){
+			res += "ID: " + result.getInt(result.getColumnIndex(SQLiteHelper.UID)) + ", VOTES: " + result.getInt(result.getColumnIndex(SQLiteHelper.VOTES)) + "\n";
+		}
+		
+		return res;
+	}
+	
 	/**
 	 * Private class to execute Database queries
 	 * Extends built in Android functionality
@@ -67,7 +91,7 @@ public class QupDBAdapter {
 	private static class SQLiteHelper extends SQLiteOpenHelper {
 		
 		private static final String 		DATABASE_NAME = "qup.db"; //Name of the database
-		private static final int 			DATABASE_VERSION = 2; //Increasing this number will drop the old database
+		private static final int 			DATABASE_VERSION = 1; //Increasing this number will drop the old database
 		
 		//These are variables associated with database queries
 		private static final String 		TABLE_SONGVOTES = "SONGVOTES";

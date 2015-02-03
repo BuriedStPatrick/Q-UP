@@ -22,8 +22,16 @@
         android:id="@+id/queue_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PLAY QUEUE"
-        android:onClick="playSong"
+        android:text="PLAY SONG QUEUE"
+        android:onClick="playSongQueue"
+        />
+    
+    <Button
+        android:id="@+id/queue_getdb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Print DB"
+        android:onClick="printDB"
         />
     
     <ListView

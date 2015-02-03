@@ -42,12 +42,16 @@ public class ClientActivity extends QupActivity {
 		if(savedInstanceState != null){
 			serverIpAddress = savedInstanceState.getString("serverIpAddress");
 		}
-		initViews();
+		initLogic();
+		initView();
+		initDrawer();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start();
 	}
 	
-	private void initViews(){
+	@Override
+	protected void initView(){
+		super.initView();
 		queueList = (ListView) findViewById(R.id.queue_list);
 		serverIp = (EditText) findViewById(R.id.server_ip);
 		connectBtn = (Button) findViewById(R.id.connect_btn);
@@ -78,6 +82,12 @@ public class ClientActivity extends QupActivity {
 		});
 		queueList.setAdapter(getSongAdapter());
 		queueList.setOnItemClickListener(new SongVoteListener());
+	}
+	
+	@Override
+	protected void initLogic(){
+		setSongQueue(false);
+		super.initLogic();
 	}
 	
 	private Handler getReceiverHandler(){

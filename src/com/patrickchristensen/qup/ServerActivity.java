@@ -35,7 +35,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 	private boolean						paused = false;
 	private boolean						playbackPaused = false;
 	
-	private SongQueue 					songQueue;
 	private ArrayList<Guest> 			guests;
 
 	private TextView 					serverStatus;
@@ -53,6 +52,7 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		super.onCreate(savedInstanceState);
 		initLogic();
 		initView();
+		initDrawer();
 		setMusicController();
 		receiverThread = new Thread(new ReceiverThread(getReceiverHandler()));
 		receiverThread.start(); // starts listening for connections in the
@@ -65,8 +65,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			MusicBinder binder = (MusicBinder) service;
 			musicService = binder.getService();
-			musicService.setList(songQueue.getSongs());
-			songQueue.addObserver(musicService);
 			musicService.setCallbackListener(ServerActivity.this);
 			isMusicBound = true;
 		}
@@ -77,15 +75,18 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		}
 	};
 
-	private void initLogic() {
-		songQueue = new SongQueue(this);
+	@Override
+	protected void initLogic() {
+		setSongQueue(true);
+		super.initLogic();
 		guests = new ArrayList<Guest>();
 	}
 	
-	private void initView() {
+	@Override
+	protected void initView() {
+		super.initView();
 		queueList = (ListView) findViewById(R.id.queue_list);
 		queueList.setAdapter(getSongAdapter());
-		queueList.setOnItemClickListener(new SongVoteListener());
 		serverStatus = (TextView) findViewById(R.id.server_status);
 	}
 	
@@ -94,19 +95,6 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		musicController.setMediaPlayer(this);
 		musicController.setAnchorView(findViewById(R.id.queue_list));
 		musicController.setEnabled(true);
-		
-	}
-	
-	private class SongVoteListener implements ListView.OnItemClickListener{
-		
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			//TODO: Vote on song
-			Toast.makeText(getApplicationContext(), "Voted: " + id, Toast.LENGTH_SHORT).show();
-			songQueue.registerVote(id);
-		}
-		
 	}
 	
 	@Override
@@ -127,8 +115,13 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		receiverThread.start();
 	}
 
-	public void playSong(View v) {
+	public void playSongQueue(View v) {
+		songQueue.registerVote(16);
 		start();
+	}
+	
+	public void printDB(View v){
+		Toast.makeText(getApplicationContext(), songQueue.printDB(), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -279,4 +272,5 @@ public class ServerActivity extends QupActivity implements MediaPlayerControl, P
 		Toast.makeText(getApplicationContext(), "Song is completed", Toast.LENGTH_SHORT).show();
 		songQueue.resetVotes(song);
 	}
+	
 }

@@ -24,7 +24,7 @@ import com.patrickchristensen.qup.threads.SenderThread;
 
 public class QupActivity extends ActionBarActivity{
 	
-	private SongQueue 				songQueue;
+	public static SongQueue 		songQueue;
 	
 	private ActionBarDrawerToggle 	drawerListener;
 	private ListView				drawerList;
@@ -36,18 +36,14 @@ public class QupActivity extends ActionBarActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		QupApplication.appContext = getApplicationContext();
-		
-		initLogic();
-		initView();
-		initDrawer();
 	}
 	
-	private void initLogic(){
-		songAdapter = new SongAdapter(this, (songQueue = new SongQueue(this)));
+	protected void initLogic(){
+		songAdapter = new SongAdapter(this, songQueue);
 		songAdapter.notifyDataSetChanged();
 	}
 	
-	private void initView(){
+	protected void initView(){
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.drawer_list);
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,7 +55,7 @@ public class QupActivity extends ActionBarActivity{
 		}
 	}
 	
-	private void initDrawer(){
+	protected void initDrawer(){
 		drawerListener = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer){
 			@Override
 			public void onDrawerOpened(View drawerView) {
@@ -81,6 +77,10 @@ public class QupActivity extends ActionBarActivity{
 	
 	protected void updateSongQueue(ArrayList<Song> songs){
 		songQueue.updateSongs(songs);
+	}
+	
+	protected void setSongQueue(boolean loadLocal){
+		songQueue = new SongQueue(this, loadLocal);
 	}
 	
 	protected SongAdapter getSongAdapter(){

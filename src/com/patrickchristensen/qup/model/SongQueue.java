@@ -22,17 +22,12 @@ public class SongQueue extends Observable {
 	
 	private QupDBAdapter			dbAdapter;
 	
-	public SongQueue(Context context) {
+	public SongQueue(Context context, boolean loadLocal) {
 		musicResolver = context.getContentResolver();
 		dbAdapter = new QupDBAdapter(context);
 		musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		songs = getSongsFromDisk();
-		Collections.sort(songs, new Comparator<Song>(){
-			@Override
-			public int compare(Song a, Song b) {
-				return a.compareTo(b);
-			}
-		});
+		if(loadLocal)
+			songs = getSongsFromDisk();
 	}
 	
 	/**
@@ -80,12 +75,6 @@ public class SongQueue extends Observable {
 	
 	public void updateSongs(ArrayList<Song> songs){
 		this.songs = songs;
-		Collections.sort(this.songs, new Comparator<Song>(){
-			@Override
-			public int compare(Song a, Song b) {
-				return a.compareTo(b);
-			}
-		});
 		setChanged();
 		notifyObservers();
 	}
@@ -110,6 +99,27 @@ public class SongQueue extends Observable {
 			}
 		}
 		updateSongs(songs); //yeah, it's stupid but whatever I'm tired
+	}
+	
+	public Song getSongById(long id){
+		for(Song _song : songs){
+			int i = 0;
+			if(_song.getSongId() == id)
+				return _song;
+		}
+		return null;
+	}
+	
+	public long getMostPopular(){
+		return dbAdapter.getMostPopular();
+	}
+	
+	public Song get(int index){
+		return songs.get(index);
+	}
+	
+	public String printDB(){
+		return dbAdapter.printDB();
 	}
 	
 	public synchronized ArrayList<Song> getSongs(){

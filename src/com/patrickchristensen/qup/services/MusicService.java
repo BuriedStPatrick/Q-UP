@@ -1,14 +1,10 @@
 package com.patrickchristensen.qup.services;
 
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
@@ -21,24 +17,23 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.patrickchristensen.qup.QupActivity;
 import com.patrickchristensen.qup.R;
 import com.patrickchristensen.qup.ServerActivity;
 import com.patrickchristensen.qup.listeners.PlaybackStateListener;
 import com.patrickchristensen.qup.model.Song;
-import com.patrickchristensen.qup.model.SongQueue;
 
 public class MusicService extends Service implements OnPreparedListener,
-		OnErrorListener, OnCompletionListener, OnAudioFocusChangeListener, Observer {
+		OnErrorListener, OnCompletionListener, OnAudioFocusChangeListener {
 
 	private final IBinder 						musicBinder = new MusicBinder();
 	private static final int 					NOTIFY_ID = 1;
 	private final static int 					SONG_POS = 0;
 	private PlaybackStateListener				callbackListener;
+	private Song currentSong;
 	
 	private MediaPlayer 						player;
-	private ArrayList<Song> 					songs;
 
 	@Override
 	public void onCreate() {
@@ -62,8 +57,9 @@ public class MusicService extends Service implements OnPreparedListener,
 	
 	private void playSong() {
 		player.reset();
-		Song playSong = songs.get(SONG_POS);
-		long currSong = playSong.getSongId();
+		long currSong = QupActivity.songQueue.getMostPopular();
+		currentSong = QupActivity.songQueue.getSongById(currSong);
+		
 		Uri trackUri = ContentUris.withAppendedId(
 				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				currSong);
@@ -73,14 +69,6 @@ public class MusicService extends Service implements OnPreparedListener,
 			Log.e("MUSIC SERVICE", "Error setting data source", e);
 		}
 		player.prepareAsync();
-	}
-
-	private void updateList(ArrayList<Song> songs) {
-		this.songs = songs;
-	}
-
-	public void setList(ArrayList<Song> songs) {
-		this.songs = songs;
 	}
 
 	public class MusicBinder extends Binder {
@@ -104,7 +92,7 @@ public class MusicService extends Service implements OnPreparedListener,
 	
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		callbackListener.onPlaybackCompleted(songs.get(SONG_POS));
+		callbackListener.onPlaybackCompleted(currentSong); //tell to update the database
 	 	player.reset();
 	}
 
@@ -124,10 +112,10 @@ public class MusicService extends Service implements OnPreparedListener,
 		Notification.Builder builder = new Notification.Builder(this);
 		builder.setContentIntent(pendInt)
 			.setSmallIcon(R.drawable.ic_launcher_v2)
-			.setTicker(songs.get(SONG_POS).getTitle())
+			.setTicker(currentSong.getTitle())
 			.setOngoing(true)
 			.setContentTitle("Playing")
-			.setContentText(songs.get(SONG_POS).getTitle());
+			.setContentText(currentSong.getTitle());
 		
 		Notification notification = builder.build();
 		startForeground(NOTIFY_ID, notification);
@@ -155,15 +143,6 @@ public class MusicService extends Service implements OnPreparedListener,
 	
 	public void go(){
 		playSong();
-	}
-	
-	@Override
-	public void update(Observable observable, Object data) {
-		if (observable instanceof SongQueue) {
-			updateList(((SongQueue) observable).getSongs());
-			if(!player.isPlaying())
-				playSong();
-		}
 	}
 	
 	@Override
